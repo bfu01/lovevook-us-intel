@@ -371,7 +371,7 @@ function buildAsinChart(key,d){
     type:'bubble',
     data:{datasets:d.asins.map(a=>({label:a.n,data:[{x:a.p,y:a.yoy??0,r:Math.max(6,Math.min(28,6+22*Math.sqrt(a.rev/mx)))}],backgroundColor:a.isN?'rgba(58,85,255,.85)':'rgba(196,211,227,.6)',borderColor:a.isN?'#3A55FF':'rgba(0,0,0,.08)',borderWidth:1}))},
     options:{responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false},tooltip:{callbacks:{label(ctx){const a=d.asins[ctx.datasetIndex];return [a.n,'ASP: $'+a.p,'Est. Rev: ~$'+(a.rev/1000).toFixed(0)+'K LTM','Rating: '+a.rat+' ('+a.reviews.toLocaleString()+')',(a.yoy!=null?'YoY: '+(a.yoy>=0?'+':'')+a.yoy.toFixed(1)+'%':'YoY: new listing')];}}}}},
+      plugins:{legend:{display:false},tooltip:{callbacks:{label(ctx){const a=d.asins[ctx.datasetIndex];return [a.n,'ASP: $'+a.p,'Est. Rev: ~$'+(a.rev/1000).toFixed(0)+'K LTM','Rating: '+a.rat+' ('+a.reviews.toLocaleString()+')',(a.yoy!=null?'YoY: '+(a.yoy>=0?'+':'')+a.yoy.toFixed(1)+'%':'YoY: new listing')];}}}},
       scales:{x:{grid:{color:gc2},ticks:{color:tc,font:{size:11}},title:{display:true,text:'Average Selling Price ($)',color:tc,font:{size:11}}},
               y:{grid:{color:gc2},ticks:{color:tc,font:{size:11},callback:v=>(v>=0?'+':'')+v+'%'},title:{display:true,text:'YoY Revenue Growth',color:tc,font:{size:11}}}}
     }
