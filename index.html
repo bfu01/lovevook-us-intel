@@ -93,7 +93,7 @@ tr.brow:hover td{background:rgba(37,99,235,.12)!important}
 .hval{font-size:19px;font-weight:700}
 .hn{font-size:11px;color:var(--muted);margin-top:3px}
 /* Winnability */
-.wgrid{display:grid;grid-template-columns:280px 1fr;gap:16px}
+.wgrid{display:grid;grid-template-columns:280px 1fr;gap:16px}.wgrid.no-kw{grid-template-columns:1fr}
 @media(max-width:900px){.wgrid{grid-template-columns:1fr}}
 .wleft{display:flex;flex-direction:column;gap:6px}
 .wbucket{padding:12px 14px;border-radius:9px;background:var(--card);cursor:pointer;transition:.15s;border:2px solid transparent}
@@ -413,10 +413,14 @@ function renderCat(key){
   document.getElementById('cpanels').innerHTML=
     '<div class="cards">'+cards+'</div>'+
     (d.data_gap_note?'<p class="dn">'+d.data_gap_note+'</p>':'')+
-    '<div class="rowhd"><h3 data-i18n="brandTableTitle">Top '+d.topN+' Brands &mdash; '+d.label+'</h3><span>T12M &middot; Amazon US</span></div>'+
+    '<div class="acc" style="margin-bottom:12px"><div class="ahdr open" onclick="tAcc(this)">'+
+    '<span data-i18n="brandTableTitle">Top '+d.topN+' Brands &mdash; '+d.label+'</span>'+
+    '<span style="font-size:11px;font-weight:400;color:var(--muted);margin-left:8px">T12M &middot; Amazon US</span>'+
+    '<span class="achv" style="margin-left:auto">&#9650;</span>'+
+    '</div><div class="abody open">'+
     '<div class="twrap"><div class="tscroll"><table><thead><tr><th style="text-align:left">#</th><th style="text-align:left">Brand</th><th>Share</th><th>Share %</th><th>YoY (pts)</th><th>ASP</th></tr></thead><tbody>'+brands+'</tbody></table></div></div>'+
+    '</div></div>'+
 
-    // Digital Shelf accordion
     '<div class="acc"><div class="ahdr open" onclick="tAcc(this)"><span data-i18n="digitalShelf">Digital Shelf &mdash; Price Analysis</span><span class="achv">&#9650;</span></div>'+
     '<div class="abody open">'+
     '<div class="callout">LOVEVOOK ($'+lvAsp+' ASP) positions '+
@@ -424,9 +428,14 @@ function renderCat(key){
       ' for '+d.label+'. Category ASP is $'+(d.statCards[3]?d.statCards[3].val.replace('$',''):'')+'. '+
       (lvAsp>parseFloat((d.statCards[3]?d.statCards[3].val.replace('$',''):0))?'LOVEVOOK is priced above category average.':'LOVEVOOK is priced near or below category average.')+'</div>'+
     '<div class="cbox" style="margin-bottom:14px">'+
-    '<h3>Brand Price Positioning &mdash; '+d.label+'</h3>'+
-    '<div class="csub">ASP vs revenue share &middot; bubble size = share &middot; blue = LOVEVOOK &middot; grey = competitors</div>'+
-    '<div style="position:relative;height:240px"><canvas id="sc-'+key+'"></canvas></div>'+
+    '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">'+
+    '<h3 id="shelf-title-'+key+'">Brand Price Positioning &mdash; '+d.label+'</h3>'+
+    '<div style="display:flex;gap:6px">'+
+    '<button class="tbt on" id="sbv-brand-'+key+'" onclick="setShelfView(\'brand\',\''+key+'\')">Brand View</button>'+
+    '<button class="tbt" id="sbv-asin-'+key+'" onclick="setShelfView(\'asin\',\''+key+'\')">ASIN View</button>'+
+    '</div></div>'+
+    '<div class="csub" id="shelf-sub-'+key+'">ASP vs revenue share &middot; blue = LOVEVOOK &middot; grey = competitors &middot; click a tier to highlight</div>'+
+    '<div style="position:relative;height:260px"><canvas id="sc-'+key+'"></canvas></div>'+
     '</div>'+
     '<div class="tbts" id="tbts-'+key+'">'+
     '<button class="tbt on" onclick="setTierFromBtn(this)" data-tier="budget">Budget ($'+minA+'-$'+budHi+')</button>'+
@@ -485,10 +494,76 @@ function setTier(tier,btn){
   var names=d.brands.filter(function(b){return b.asp>=lo&&b.asp<=hi;}).slice(0,6).map(function(b){return b.n+' ($'+b.asp+')';}).join(', ');
   var el=document.getElementById('sdesc-'+key);
   if(el) el.textContent=(tier==='budget'?'Budget':tier==='mid'?'Mid':'Premium')+' tier ($'+lo+(hi<99999?'-$'+hi:'+')+'): '+(names||'No brands in this range');
+  // Highlight tier on chart
+  var activeBrandView=document.getElementById('sbv-brand-'+key);
+  if(activeBrandView&&activeBrandView.classList.contains('on')){highlightTierOnChart(key,tier,d);}
+}
+
+
+function setShelfView(view,key){
+  var d=catData[key];
+  // Update toggle buttons
+  document.querySelectorAll('[id^="sbv-"][id$="-'+key+'"]').forEach(function(b){b.classList.remove('on');});
+  var activeBtn=document.getElementById('sbv-'+view+'-'+key);
+  if(activeBtn)activeBtn.classList.add('on');
+  // Update sub label
+  var sub=document.getElementById('shelf-sub-'+key);
+  if(sub)sub.textContent=view==='brand'?'ASP vs revenue share \u00b7 blue = LOVEVOOK \u00b7 grey = competitors \u00b7 click a tier to highlight':'ASP vs YoY growth \u00b7 bubble size = reviews \u00b7 blue = LOVEVOOK ASINs \u00b7 grey = competitors';
+  // Rebuild chart
+  var canvas=document.getElementById('sc-'+key);
+  if(canvas){
+    var existingChart=Chart.getChart(canvas);
+    if(existingChart)existingChart.destroy();
+    if(view==='brand'){
+      var mx=Math.max.apply(null,d.brands.map(function(b){return b.s;}));
+      var datasets=d.brands.map(function(b){return {label:b.n,data:[{x:b.asp,y:b.s,r:Math.max(5,Math.min(22,5+17*(b.s/mx)))}],backgroundColor:b.isN?'rgba(37,99,235,.85)':'rgba(156,163,175,.45)',borderColor:b.isN?'#2563EB':'rgba(0,0,0,.1)',borderWidth:b.isN?2:1};});
+      buildShelfChart(key,d,datasets);
+    } else {
+      var maxRev=Math.max.apply(null,d.asins.map(function(a){return a.rev;}));
+      var aDatasets=d.asins.map(function(a){
+        var r=Math.max(6,Math.min(26,6+20*Math.sqrt(a.rev/maxRev)));
+        return {label:a.n,data:[{x:a.p,y:a.yoy||0,r:r}],backgroundColor:a.isN?'rgba(37,99,235,.85)':'rgba(156,163,175,.5)',borderColor:a.isN?'#2563EB':'rgba(0,0,0,.1)',borderWidth:a.isN?2:1};
+      });
+      buildAsinChart(key,d,aDatasets);
+    }
+  }
+}
+
+function highlightTierOnChart(key,tier,d){
+  var allAsps=d.brands.map(function(b){return b.asp;}).filter(function(x){return x>0;});
+  var minA=Math.min.apply(null,allAsps),maxA=Math.max.apply(null,allAsps);
+  var budHi=Math.round(minA+(maxA-minA)*0.33),midHi=Math.round(minA+(maxA-minA)*0.66);
+  var lo=tier==='budget'?0:tier==='mid'?budHi+1:midHi+1;
+  var hi=tier==='budget'?budHi:tier==='mid'?midHi:999999;
+  var mx=Math.max.apply(null,d.brands.map(function(b){return b.s;}));
+  var datasets=d.brands.map(function(b){
+    var inTier=b.asp>=lo&&b.asp<=hi;
+    var alpha=inTier?0.85:0.15;
+    return {label:b.n,data:[{x:b.asp,y:b.s,r:Math.max(5,Math.min(22,5+17*(b.s/mx)))}],
+      backgroundColor:b.isN?'rgba(37,99,235,'+alpha+')':inTier?'rgba(37,99,235,.5)':'rgba(156,163,175,'+alpha+')',
+      borderColor:b.isN?'#2563EB':inTier?'rgba(37,99,235,.6)':'rgba(0,0,0,.05)',
+      borderWidth:b.isN?2:inTier?2:1};
+  });
+  var canvas=document.getElementById('sc-'+key);
+  if(canvas){var ec=Chart.getChart(canvas);if(ec)ec.destroy();}
+  buildShelfChart(key,d,datasets);
+}
+
+function buildAsinChart(key,d,datasets){
+  var canvas=document.getElementById('sc-'+key);if(!canvas)return;
+  new Chart(canvas,{
+    type:'bubble',data:{datasets:datasets},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:function(ctx){var a=d.asins[ctx.datasetIndex];return [a.n,'ASP: $'+a.p,(a.yoy!=null?'YoY: '+(a.yoy>=0?'+':'')+a.yoy+'%':'New listing'),'Reviews: '+a.reviews.toLocaleString()];}}}},
+      scales:{x:{grid:{color:gridCol()},ticks:{color:tickCol(),font:{size:11}},title:{display:true,text:'Average Selling Price ($)',color:tickCol(),font:{size:11}}},
+              y:{grid:{color:gridCol()},ticks:{color:tickCol(),font:{size:11},callback:function(v){return (v>=0?'+':'')+v+'%';}},title:{display:true,text:'YoY Revenue Growth',color:tickCol(),font:{size:11}}}}
+    }
+  });
 }
 
 function buildShelfChart(key,d,datasets){
   var canvas=document.getElementById('sc-'+key);if(!canvas)return;
+  var ec=Chart.getChart(canvas);if(ec)ec.destroy();
   new Chart(canvas,{
     type:'bubble',data:{datasets:datasets},
     options:{responsive:true,maintainAspectRatio:false,
@@ -513,6 +588,13 @@ function showWBucket(bkey,btn,catKey){
   var kws=winnKw[bkey]||[];
   var container=document.getElementById('wkw-'+catKey);
   if(!container)return;
+  var wgrid=container.closest('.wgrid')||container.parentElement;
+  if(kws.length===0){
+    if(wgrid)wgrid.classList.add('no-kw');
+    container.innerHTML='';
+    return;
+  }
+  if(wgrid)wgrid.classList.remove('no-kw');
   container.innerHTML=
     '<div class="wkw-hdr" style="color:'+meta.col+'">'+meta.label+' keywords</div>'+
     '<div class="wkw-sub">'+meta.sub+'</div>'+
@@ -595,10 +677,10 @@ function showOpp(i,card){
     '<div class="card"><div class="lbl">Top Brand</div><div class="val" style="font-size:15px">'+c.topBrand+'</div><div class="sub">'+c.topBrandShare+'% share</div></div>'+
     '<div class="card"><div class="lbl">Category ASP</div><div class="val">$'+c.asp+'</div><div class="sub">LOVEVOOK current avg: $'+c.brandAsp+'</div></div>'+
     '</div>'+
-    '<div class="stabs">'+
-    '<button class="stbtn on" onclick="showSTabEl(this)" data-tab="brands" data-pfx="st-"+i+"">Brands</button>'+
-    '<button class="stbtn" onclick="showSTabEl(this)" data-tab="asins" data-pfx="st-"+i+"">Top ASINs</button>'+
-    '<button class="stbtn" onclick="showSTabEl(this)" data-tab="shelf" data-pfx="st-"+i+"">Digital Shelf</button>'+
+    '<div class="stabs" id="stabs-'+i+'">'+
+    '<button class="stbtn on" onclick="showSTabEl(this)" data-tab="brands" data-idx="'+i+'">Brands</button>'+
+    '<button class="stbtn" onclick="showSTabEl(this)" data-tab="asins" data-idx="'+i+'">Top ASINs</button>'+
+    '<button class="stbtn" onclick="showSTabEl(this)" data-tab="shelf" data-idx="'+i+'">Digital Shelf</button>'+
     '</div>'+
     '<div id="st-'+i+'">'+
     '<div id="stp-brands-'+i+'" class="stp on">'+
@@ -616,39 +698,47 @@ function showOpp(i,card){
     '<div class="cbox">'+
     '<h3>Digital Shelf &mdash; '+c.name+'</h3>'+
     '<div class="csub">'+
-    '<span style="display:inline-flex;align-items:center;gap:4px;margin-right:12px"><span style="width:10px;height:10px;border-radius:50%;background:#16A34A;display:inline-block"></span> On LOVEVOOK&#8217;s shelf</span>'+
-    '<span style="display:inline-flex;align-items:center;gap:4px;margin-right:12px"><span style="width:10px;height:10px;border-radius:50%;background:rgba(156,163,175,.4);display:inline-block"></span> Outside shelf range</span>'+
-    '<span style="display:inline-flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:50%;background:#2563EB;display:inline-block"></span> LOVEVOOK entry point</span>'+
+    '<span style="display:inline-flex;align-items:center;gap:4px;margin-right:12px"><span style="width:10px;height:10px;border-radius:50%;background:#16A34A;display:inline-block"></span> On LOVEVOOK shelf (&#177;30% of $'+lvAsp+')</span>'+
+    '<span style="display:inline-flex;align-items:center;gap:4px;margin-right:12px"><span style="width:10px;height:10px;border-radius:50%;background:rgba(156,163,175,.4);display:inline-block"></span> Outside range</span>'+
+    '<span style="display:inline-flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:50%;background:#2563EB;display:inline-block"></span> LOVEVOOK entry</span>'+
     '</div>'+
     '<div style="position:relative;height:260px"><canvas id="shelfChart-'+i+'"></canvas></div>'+
     '</div>'+
-    '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px">'+
-    '<div style="background:var(--card);border-radius:9px;padding:14px;'+(entryTier==='Budget'?'border:2px solid #2563EB':'')+'">'+
-    '<div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--muted);margin-bottom:5px">Budget $'+minA+'-$'+budHi+'</div>'+
-    '<div style="font-size:12px;color:var(--muted)">'+c.brands.filter(function(b){return b.asp<=budHi;}).map(function(b){return b.n;}).join(', ')+'</div>'+
-    (entryTier==='Budget'?'<div style="margin-top:8px;font-size:11px;font-weight:700;color:#2563EB">LOVEVOOK entry ($'+lvAsp+')</div>':'')+
+    '<div class="callout" style="margin-top:12px;margin-bottom:14px">'+
+    '<strong>Where LOVEVOOK would sit:</strong> Based on an estimated entry ASP of $'+lvAsp+', LOVEVOOK would compete in the <strong>'+entryTier+' tier</strong> of '+c.name+'. '+
+    (lvAsp>c.asp?'This positions LOVEVOOK above the category average ($'+c.asp+'), in the premium segment where content quality and brand recognition drive conversion.':'This positions LOVEVOOK near the category average ($'+c.asp+'), where Pattern would differentiate through superior listing content and targeted keyword capture.')+
+    ' Pattern would anchor initial ad spend on search terms where LOVEVOOK already has organic momentum across its bag categories.'+
     '</div>'+
-    '<div style="background:var(--card);border-radius:9px;padding:14px;'+(entryTier==='Mid'?'border:2px solid #2563EB':'')+'">'+
-    '<div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--muted);margin-bottom:5px">Mid $'+(budHi+1)+'-$'+midHi+'</div>'+
-    '<div style="font-size:12px;color:var(--muted)">'+c.brands.filter(function(b){return b.asp>budHi&&b.asp<=midHi;}).map(function(b){return b.n;}).join(', ')+'</div>'+
-    (entryTier==='Mid'?'<div style="margin-top:8px;font-size:11px;font-weight:700;color:#2563EB">LOVEVOOK entry ($'+lvAsp+')</div>':'')+
-    '</div>'+
-    '<div style="background:var(--card);border-radius:9px;padding:14px;'+(entryTier==='Premium'?'border:2px solid #2563EB':'')+'">'+
-    '<div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--muted);margin-bottom:5px">Premium $'+(midHi+1)+'+</div>'+
-    '<div style="font-size:12px;color:var(--muted)">'+c.brands.filter(function(b){return b.asp>midHi;}).map(function(b){return b.n;}).join(', ')+'</div>'+
-    (entryTier==='Premium'?'<div style="margin-top:8px;font-size:11px;font-weight:700;color:#2563EB">LOVEVOOK entry ($'+lvAsp+')</div>':'')+
-    '</div>'+
-    '</div>'+
-    '<div class="prole"><div class="prole-lbl" data-i18n="patternRole">Pattern&#8217;s Role</div>'+c.patternRole+'</div>'+
+    c.patternRole+'</div>'+
     '</div>'+
     '</div>';
 
-  setTimeout(function(){
-    buildOppShelfChart(i,c,asinDatasets);
-  },60);
+  if(!window._oppDatasets) window._oppDatasets={};
+  window._oppDatasets[i]=asinDatasets;
+  // Don't build shelf chart yet - lazy load when tab clicked
+  window["_shelfBuilt"+i]=false;
 }
 
-function showSTabEl(btn){showSTab(btn.getAttribute("data-tab"),btn,btn.getAttribute("data-pfx"));}
+function showSTabEl(btn){
+  var tab=btn.getAttribute("data-tab");
+  var idx=btn.getAttribute("data-idx");
+  var containerId="st-"+idx;
+  // Deactivate all stbtn siblings
+  var stabs=btn.closest(".stabs");
+  if(stabs)stabs.querySelectorAll(".stbtn").forEach(function(b){b.classList.remove("on");});
+  btn.classList.add("on");
+  // Show correct panel
+  var detEl=document.getElementById("odet");
+  if(!detEl)return;
+  detEl.querySelectorAll(".stp").forEach(function(p){p.classList.remove("on");});
+  var target=document.getElementById("stp-"+tab+"-"+idx);
+  if(target)target.classList.add("on");
+  // Build shelf chart if needed
+  if(tab==="shelf"){
+    var i=parseInt(idx);
+    if(!window["_shelfBuilt"+i]){buildOppShelfChart(i,newCats[i],_oppDatasets[i]);window["_shelfBuilt"+i]=true;}
+  }
+}
 function showSTab(tab,btn,containerId){
   var container=document.getElementById(containerId);
   if(!container)return;
