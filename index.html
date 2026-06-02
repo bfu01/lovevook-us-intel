@@ -279,7 +279,7 @@ function renderCat(key){
   const brands=d.brands.map(b=>`<tr class="${b.isN?'brow':''}">
     <td style="color:var(--muted);font-size:12px">${b.r}${b.isN?' ★':''}</td>
     <td style="font-weight:${b.isN?700:400}">${b.n}</td>
-    <td><div class="sbar-w"><div class="sbar-bg"><div class="sbar-f" style="width:${Math.round(b.s/mx*86)}px"></div></div></div></td>
+    <td><div class="sbar-w"><div class="sbar-bg"><div class="sbar-f" style="width:${Math.min(86,Math.round(b.s/10*86))}px"></div></div></div></td>
     <td class="num">${b.s.toFixed(1)}%</td>
     <td class="num ${b.y>0?'pos':b.y<0?'nv':''}">${b.y!==null?(b.y>=0?'+':'')+b.y.toFixed(1)+'pts':'-'}</td>
     <td class="num">$${b.asp}</td>
@@ -358,9 +358,14 @@ function renderCat(key){
 }
 
 function setTier(tier,btn,key){
-  btn.closest('.tbts').querySelectorAll('.tbt').forEach(b=>b.classList.remove('on'));
+  // Remove 'on' from all tier buttons in this category's panel
+  var allTierBtns=document.querySelectorAll('#cpanels .tbt');
+  allTierBtns.forEach(function(b){b.classList.remove('on');});
   btn.classList.add('on');
-  document.getElementById('sdesc-'+key).textContent=catData[key].shelf_tiers[tier].desc;
+  var el=document.getElementById('sdesc-'+key);
+  if(el&&catData[key]&&catData[key].shelf_tiers[tier]){
+    el.textContent=catData[key].shelf_tiers[tier].desc;
+  }
 }
 
 function buildAsinChart(key,d){
@@ -396,21 +401,103 @@ function buildOppTab(){
 
 function showOpp(i,card){
   document.querySelectorAll('.ocard').forEach(c=>c.classList.remove('on'));
-  if(card) card.classList.add('on'); else document.querySelectorAll('.ocard')[i]?.classList.add('on');
+  if(card) card.classList.add('on'); else document.querySelectorAll('.ocard')[i]&&document.querySelectorAll('.ocard')[i].classList.add('on');
   const c=newCats[i];
+  
+  // Compute price shelf tiers for new category based on brand ASP distribution
+  const asps=c.brands.map(b=>b.asp).filter(a=>a>0);
+  const minAsp=Math.min(...asps), maxAsp=Math.max(...asps);
+  const range=maxAsp-minAsp||10;
+  const budHi=Math.round(minAsp+range*0.33);
+  const midHi=Math.round(minAsp+range*0.66);
+  
+  // LOVEVOOK entry tier
+  const lvAsp=c.brandAsp;
+  const entryTier=lvAsp<=budHi?'Budget':lvAsp<=midHi?'Mid':'Premium';
+  const entryLo=entryTier==='Budget'?minAsp:entryTier==='Mid'?budHi+1:midHi+1;
+  const entryHi=entryTier==='Budget'?budHi:entryTier==='Mid'?midHi:maxAsp+30;
+
   document.getElementById('odet').innerHTML=`
     <div class="fit">${c.rationale}</div>
     <div class="cards" style="grid-template-columns:repeat(4,1fr);margin-bottom:22px">
       <div class="card"><div class="lbl">Category Size</div><div class="val">$${c.size}M</div><div class="sub">T12M &middot; Amazon US</div></div>
       <div class="card ${c.yoy>0?'hi':'neg'}"><div class="lbl">YoY Unit Growth</div><div class="val">${c.yoy>=0?'+':''}${c.yoy}%</div><div class="sub">${c.yoy>0?'Growing':'Contracting'}</div></div>
-      <div class="card"><div class="lbl">Top Brand</div><div class="val" style="font-size:15px">${c.topBrand}</div><div class="sub">${c.topBrandShare}% share</div></div>
-      <div class="card"><div class="lbl">Category ASP</div><div class="val">$${c.asp}</div><div class="sub">LOVEVOOK avg: $${c.brandAsp}</div></div>
+      <div class="card"><div class="lbl">Top Brand</div><div class="val" style="font-size:15px">${c.topBrand}</div><div class="sub">${c.topBrandShare.toFixed(1)}% share</div></div>
+      <div class="card"><div class="lbl">Category ASP</div><div class="val">$${c.asp}</div><div class="sub">LOVEVOOK current avg: $${c.brandAsp}</div></div>
     </div>
+    
+    <div class="cbox" style="margin-bottom:22px">
+      <h3>Brand Price Positioning &mdash; ${c.name}</h3>
+      <div class="csub">Circle size = estimated revenue share &middot; LOVEVOOK entry point shown in blue</div>
+      <div style="position:relative;height:280px"><canvas id="oppChart-${i}"></canvas></div>
+    </div>
+
+    <div class="cbox" style="margin-bottom:22px">
+      <h3>Digital Shelf &mdash; Price Tier Analysis</h3>
+      <div class="csub">Where would LOVEVOOK compete in ${c.name}?</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:16px">
+        <div style="background:${entryTier==='Budget'?'rgba(58,85,255,.08)':'var(--card)'};border:${entryTier==='Budget'?'2px solid #3A55FF':'1px solid var(--border)'};border-radius:12px;padding:16px">
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:6px">Budget</div>
+          <div style="font-size:18px;font-weight:700;margin-bottom:4px">$${minAsp}&ndash;$${budHi}</div>
+          <div style="font-size:12px;color:var(--muted)">${c.brands.filter(b=>b.asp<=budHi).map(b=>b.n).join(', ')||'—'}</div>
+          ${entryTier==='Budget'?'<div style="margin-top:8px;font-size:11px;font-weight:700;color:#3A55FF">LOVEVOOK entry point ($'+lvAsp+')</div>':''}
+        </div>
+        <div style="background:${entryTier==='Mid'?'rgba(58,85,255,.08)':'var(--card)'};border:${entryTier==='Mid'?'2px solid #3A55FF':'1px solid var(--border)'};border-radius:12px;padding:16px">
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:6px">Mid</div>
+          <div style="font-size:18px;font-weight:700;margin-bottom:4px">$${budHi+1}&ndash;$${midHi}</div>
+          <div style="font-size:12px;color:var(--muted)">${c.brands.filter(b=>b.asp>budHi&&b.asp<=midHi).map(b=>b.n).join(', ')||'—'}</div>
+          ${entryTier==='Mid'?'<div style="margin-top:8px;font-size:11px;font-weight:700;color:#3A55FF">LOVEVOOK entry point ($'+lvAsp+')</div>':''}
+        </div>
+        <div style="background:${entryTier==='Premium'?'rgba(58,85,255,.08)':'var(--card)'};border:${entryTier==='Premium'?'2px solid #3A55FF':'1px solid var(--border)'};border-radius:12px;padding:16px">
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:6px">Premium</div>
+          <div style="font-size:18px;font-weight:700;margin-bottom:4px">$${midHi+1}+</div>
+          <div style="font-size:12px;color:var(--muted)">${c.brands.filter(b=>b.asp>midHi).map(b=>b.n).join(', ')||'—'}</div>
+          ${entryTier==='Premium'?'<div style="margin-top:8px;font-size:11px;font-weight:700;color:#3A55FF">LOVEVOOK entry point ($'+lvAsp+')</div>':''}
+        </div>
+      </div>
+      <div class="dn" style="margin:0">LOVEVOOK's current average ASP is $${lvAsp}, positioning it in the <strong>${entryTier}</strong> tier for ${c.name}. The category ASP is $${c.asp}. ${lvAsp>c.asp?'LOVEVOOK would enter above category average, competing in the premium segment.':'LOVEVOOK would enter near or below category average, competing on value.'}</div>
+    </div>
+
     <div class="rowhd"><h3>Top Brands &mdash; ${c.name}</h3><span>Amazon US</span></div>
     <div class="twrap"><table>
-      <thead><tr><th>#</th><th>Brand</th><th class="num">Rev. Share</th><th class="num">ASP</th></tr></thead>
-      <tbody>${c.brands.map(b=>`<tr><td style="color:var(--muted);font-size:12px">${b.r}</td><td style="font-weight:600">${b.n}</td><td class="num">${b.s.toFixed(1)}%</td><td class="num">$${b.asp}</td></tr>`).join('')}</tbody>
+      <thead><tr><th>#</th><th>Brand</th><th class="num">Rev. Share</th><th class="num">ASP</th><th class="num">vs LOVEVOOK ASP</th></tr></thead>
+      <tbody>${c.brands.map(b=>`<tr>
+        <td style="color:var(--muted);font-size:12px">${b.r}</td>
+        <td style="font-weight:600">${b.n}</td>
+        <td class="num">${b.s.toFixed(1)}%</td>
+        <td class="num">$${b.asp}</td>
+        <td class="num ${b.asp<lvAsp?'pos':'nv'}">${b.asp<lvAsp?'-':'+'} $${Math.abs(b.asp-lvAsp)}</td>
+      </tr>`).join('')}</tbody>
     </table></div>`;
+    
+  // Build brand price positioning chart
+  setTimeout(function(){buildOppChart(i,c);},60);
+}
+
+function buildOppChart(i,c){
+  var canvas=document.getElementById('oppChart-'+i);
+  if(!canvas)return;
+  var g=gc(),gc2=g?'rgba(255,255,255,.08)':'rgba(0,0,0,.06)',tc=g?'#aaa':'#6B7B8D';
+  var mx=Math.max(...c.brands.map(function(b){return b.s;}));
+  var datasets=c.brands.map(function(b){
+    return {label:b.n,data:[{x:b.asp,y:b.s,r:Math.max(6,Math.min(26,6+20*(b.s/mx)))}],backgroundColor:'rgba(196,211,227,.6)',borderColor:'rgba(0,0,0,.1)',borderWidth:1};
+  });
+  // Add LOVEVOOK entry point
+  datasets.push({label:'LOVEVOOK entry',data:[{x:c.brandAsp,y:0,r:12}],backgroundColor:'rgba(58,85,255,.9)',borderColor:'#3A55FF',borderWidth:2});
+  new Chart(canvas,{
+    type:'bubble',
+    data:{datasets:datasets},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:function(ctx){
+        if(ctx.datasetIndex===c.brands.length) return ['LOVEVOOK entry point','ASP: $'+c.brandAsp,'Entering '+c.name];
+        var b=c.brands[ctx.datasetIndex];return [b.n,'ASP: $'+b.asp,'Rev. Share: '+b.s.toFixed(1)+'%'];
+      }}}},
+      scales:{
+        x:{grid:{color:gc2},ticks:{color:tc,font:{size:11}},title:{display:true,text:'Average Selling Price ($)',color:tc,font:{size:11}}},
+        y:{grid:{color:gc2},ticks:{color:tc,font:{size:11},callback:function(v){return v+'%';}},title:{display:true,text:'Revenue Share (%)',color:tc,font:{size:11}}}
+      }
+    }
+  });
 }
 
 goTab(0);
