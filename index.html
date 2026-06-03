@@ -843,7 +843,7 @@ function buildFilteredAsinChart(key,d,allA,lo,hi){
       bc=yoy>0?'#16A34A':'#DC2626'; bw=2;
     } else {
       // Out-of-tier: very faint but still shows full picture
-      bg='rgba(156,163,175,.05)'; bc='rgba(0,0,0,.02)'; bw=0;
+      bg='rgba(156,163,175,.25)'; bc='rgba(156,163,175,.3)'; bw=1;
     }
     return {label:(a.isN?'[LOVEVOOK] ':'['+a.brand+'] ')+a.n,
       data:[{x:a.p,y:yoy,r:r}],
