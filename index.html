@@ -1347,12 +1347,7 @@ function showOpp(i,card){
   document.getElementById('odet').innerHTML=
     '<div style="background:var(--ctx);border-left:4px solid '+(c.tier==='top'?'#16A34A':c.tier==='medium'?'#D97706':'var(--muted)')+';border-radius:0 9px 9px 0;padding:14px 18px;font-size:13px;line-height:1.6;margin-bottom:18px">'+c.rationale+'</div>'+
     renderNewCatAnalysis(i,c)+
-    '<div class="cards" style="grid-template-columns:repeat(4,1fr);margin-bottom:20px">'+
-    '<div class="card"><div class="lbl">Category Size</div><div class="val">$'+c.size+'M</div><div class="sub">T12M &middot; Amazon US</div></div>'+
-    '<div class="card '+(c.yoy>0?'pos':'neg')+'"><div class="lbl">YoY Growth</div><div class="val">'+(c.yoy>=0?'+':'')+c.yoy+'%</div><div class="sub">'+(c.yoy>0?'Growing':'Contracting')+'</div></div>'+
-    '<div class="card"><div class="lbl">Top Brand</div><div class="val" style="font-size:15px">'+c.topBrand+'</div><div class="sub">'+c.topBrandShare+'% share</div></div>'+
-    '<div class="card"><div class="lbl">Category ASP</div><div class="val">$'+c.asp+'</div><div class="sub">LOVEVOOK current avg: $'+c.brandAsp+'</div></div>'+
-    '</div>'+
+    +
     '<div class="stabs" id="stabs-'+i+'">'+
     '<button class="stbtn on" onclick="showSTabEl(this)" data-tab="brands" data-idx="'+i+'">Brands</button>'+
     '<button class="stbtn" onclick="showSTabEl(this)" data-tab="asins" data-idx="'+i+'">Top ASINs</button>'+
