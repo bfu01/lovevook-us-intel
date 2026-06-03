@@ -479,6 +479,64 @@ function showCat(key,btn){
   renderCat(key);
 }
 
+function populateWinnability(key,d,wb){
+  var bounds=getTierBounds(d);
+  var wbuckets=[
+    {key:'win',label:'Winning',count:wb.win_count,cur:wb.win_clicks,pot:wb.win_pot,col:'#7C3AED',
+     adv_pct:wb.adv_pct_win,adv:Math.round(wb.win_count*wb.adv_pct_win/100),notAdv:wb.win_count-Math.round(wb.win_count*wb.adv_pct_win/100)},
+    {key:'high',label:'High',count:wb.high_count,cur:wb.high_clicks,pot:wb.high_pot,col:'#16A34A',
+     adv_pct:wb.adv_pct_high,adv:Math.round(wb.high_count*wb.adv_pct_high/100),notAdv:wb.high_count-Math.round(wb.high_count*wb.adv_pct_high/100)},
+    {key:'med',label:'Medium',count:wb.med_count,cur:wb.med_clicks,pot:wb.med_pot,col:'#D97706',
+     adv_pct:wb.adv_pct_med||wb.med_adv_pct||31.9,adv:Math.round(wb.med_count*(wb.adv_pct_med||wb.med_adv_pct||31.9)/100),notAdv:Math.round(wb.med_count*(1-(wb.adv_pct_med||wb.med_adv_pct||31.9)/100))},
+    {key:'low',label:'Low',count:wb.low_count,cur:wb.low_clicks,pot:wb.low_pot,col:'#EF4444',
+     adv_pct:30.6,adv:Math.round(wb.low_count*0.306),notAdv:Math.round(wb.low_count*0.694)},
+    {key:'vlow',label:'Very Low',count:wb.vlow_count,cur:wb.vlow_clicks,pot:wb.vlow_pot,col:'#9CA3AF',
+     adv_pct:24.2,adv:Math.round(wb.vlow_count*0.242),notAdv:Math.round(wb.vlow_count*0.758)},
+  ];
+  
+  function renderBucket(b){
+    var total=b.cur+b.pot;
+    var curPct=total>0?Math.round((b.cur/total)*100):0;
+    var advPct=Math.round(b.adv_pct||0);
+    var ticks=['25','50','75'].map(function(p){
+      return '<div style="position:absolute;left:'+p+'%;top:0;bottom:0;width:1px;background:rgba(128,128,128,.25);z-index:1"></div>';
+    }).join('');
+    var pctLabels='<div style="display:flex;font-size:9px;color:var(--muted);margin-top:1px;position:relative;height:12px">'+
+      '<span style="position:absolute;left:23%">25%</span><span style="position:absolute;left:48%">50%</span><span style="position:absolute;left:73%">75%</span></div>';
+    return '<div class="wbucket" onclick="showWBucketEl(this)" data-bkey="'+b.key+'" data-ckey="'+key+'" style="color:'+b.col+';margin-bottom:10px;cursor:pointer;padding:10px 12px;border-radius:8px;background:var(--card)">'+
+      '<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px">'+
+        '<span style="font-size:13px;font-weight:700;color:'+b.col+'">'+b.label+' &middot; '+b.count.toLocaleString()+' kws</span>'+
+        '<span style="font-size:11px;color:var(--muted)">'+b.cur.toLocaleString()+' &middot; +'+b.pot.toLocaleString()+'</span>'+
+      '</div>'+
+      // Bar 1: Clicks
+      '<div style="margin-bottom:6px">'+
+        '<div style="font-size:10px;color:var(--muted);margin-bottom:2px;display:flex;justify-content:space-between"><span>Clicks captured</span><span style="color:'+b.col+'">'+curPct+'%</span></div>'+
+        '<div style="position:relative;height:9px;border-radius:4px;overflow:hidden;background:var(--border)">'+ticks+
+          '<div style="position:absolute;left:0;top:0;height:100%;width:'+curPct+'%;background:'+b.col+'"></div>'+
+          '<div style="position:absolute;left:'+curPct+'%;top:0;height:100%;width:'+(100-curPct)+'%;background:'+b.col+';opacity:.15"></div>'+
+        '</div>'+pctLabels+
+        '<div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted)"><span>'+b.cur.toLocaleString()+'/day</span><span>+'+b.pot.toLocaleString()+'/day</span></div>'+
+      '</div>'+
+      // Bar 2: Auction coverage
+      '<div>'+
+        '<div style="font-size:10px;color:var(--muted);margin-bottom:2px;display:flex;justify-content:space-between"><span>In auction</span><span style="color:#2563EB">'+advPct+'%</span></div>'+
+        '<div style="position:relative;height:9px;border-radius:4px;overflow:hidden;background:#E5E7EB">'+ticks+
+          '<div style="position:absolute;left:0;top:0;height:100%;width:'+advPct+'%;background:#2563EB"></div>'+
+        '</div>'+pctLabels+
+        '<div style="display:flex;justify-content:space-between;font-size:10px;margin-top:1px">'+
+          '<span style="color:#2563EB">'+b.adv.toLocaleString()+' bidding</span>'+
+          '<span style="color:var(--muted)">'+b.notAdv.toLocaleString()+' not bidding</span>'+
+        '</div>'+
+      '</div>'+
+    '</div>';
+  }
+  
+  var winEl=document.getElementById('wleft-win-'+key);
+  var oppEl=document.getElementById('wleft-opp-'+key);
+  if(winEl) winEl.innerHTML=wbuckets.slice(0,2).map(renderBucket).join('');
+  if(oppEl) oppEl.innerHTML=wbuckets.slice(2).map(renderBucket).join('');
+}
+
 function renderCat(key){
   var d=catData[key];
   var mx=Math.max.apply(null,d.brands.map(function(b){return b.s;}));
@@ -528,7 +586,7 @@ function renderCat(key){
     {key:'win',label:'Winning',count:wb.win_count,cur:wb.win_clicks,pot:wb.win_pot,col:'#7C3AED',
      adv_pct:wb.adv_pct_win,adv:Math.round(wb.win_count*wb.adv_pct_win/100),notAdv:wb.win_count-Math.round(wb.win_count*wb.adv_pct_win/100)},
     {key:'high',label:'High',count:wb.high_count,cur:wb.high_clicks,pot:wb.high_pot,col:'#16A34A',adv_pct:wb.adv_pct_high,adv:Math.round(wb.high_count*wb.adv_pct_high/100),notAdv:wb.high_count-Math.round(wb.high_count*wb.adv_pct_high/100)},
-    {key:'med',label:'Medium',count:wb.med_count,cur:wb.med_clicks,pot:wb.med_pot,col:'#D97706',adv_pct:wb.med_adv_pct,adv:Math.round(wb.med_count*wb.med_adv_pct/100),notAdv:wb.med_count-Math.round(wb.med_count*wb.med_adv_pct/100)},
+    {key:'med',label:'Medium',count:wb.med_count,cur:wb.med_clicks,pot:wb.med_pot,col:'#D97706',adv_pct:(wb.med_adv_pct||wb.adv_pct_med||31.9),adv:Math.round(wb.med_count*(wb.med_adv_pct||wb.adv_pct_med||31.9)/100),notAdv:Math.round(wb.med_count*(1-(wb.med_adv_pct||wb.adv_pct_med||31.9)/100))},
     {key:'low',label:'Low',count:wb.low_count,cur:wb.low_clicks,pot:wb.low_pot,col:'#EF4444',adv_pct:30.6,adv:Math.round(wb.low_count*0.306),notAdv:Math.round(wb.low_count*0.694)},
     {key:'vlow',label:'Very Low',count:wb.vlow_count,cur:wb.vlow_clicks,pot:wb.vlow_pot,col:'#9CA3AF',adv_pct:24.2,adv:Math.round(wb.vlow_count*0.242),notAdv:Math.round(wb.vlow_count*0.758)},
   ];
@@ -623,9 +681,13 @@ function renderCat(key){
     '<div class="acc"><div class="ahdr" onclick="tAcc(this)"><span data-i18n="winnability">Digital Search Winnability</span><span class="achv">&#9650;</span></div>'+
     '<div class="abody">'+
     '<div class="callout">LOVEVOOK is estimated to be winning across <strong>'+wb.win_count.toLocaleString()+' search terms</strong> generating approximately <strong>'+wb.win_clicks.toLocaleString()+' brand clicks per day</strong>. A further <strong>'+(wb.high_count+wb.med_count).toLocaleString()+' terms</strong> represent an estimated <strong>'+(wb.high_pot+wb.med_pot).toLocaleString()+' additional potential clicks per day</strong>. Figures are directional estimates.</div>'+
-    '<div class="wgrid">'+
-    '<div class="wleft" id="wleft-'+key+'">'+wLeftHtml+'</div>'+
-    '<div class="wright" id="wright-'+key+'"><div id="wkw-'+key+'"></div></div>'+
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:4px">'+
+      '<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#7C3AED;padding-bottom:6px;border-bottom:2px solid #7C3AED">Winning & High Priority</div>'+
+      '<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);padding-bottom:6px;border-bottom:2px solid var(--border)">Monitor & Develop</div>'+
+    '</div>'+
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">'+
+      '<div id="wleft-win-'+key+'"></div>'+
+      '<div id="wleft-opp-'+key+'"></div>'+
     '</div>'+
     '<p class="dn" style="margin-top:12px">Keyword winnability data covers LOVEVOOK&#8217;s full US search footprint. Individual term estimates are directional. Source: Pattern Intelligence via softy_brand_winnability_summary (winnability_adj thresholds: 11=Winning, 9-11=High, 6-9=Medium, 3-6=Low, 0-3=Very Low).</p>'+
     '</div></div>';
@@ -646,6 +708,8 @@ function renderCat(key){
     document.querySelectorAll('#tbts-'+key+' .tbt').forEach(function(b){
       b.classList.toggle('on',b.getAttribute('data-tier')===tier);
     });
+    // Populate two-column winnability
+    populateWinnability(key,d,wb);
   },80);
 }
 
