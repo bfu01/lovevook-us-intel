@@ -572,7 +572,8 @@ function renderCat(key){
     var cls=i===1?(parseFloat(c.val)>0?'pos':'neg'):'';
     var subMap={'T12M - Amazon US':'T12M · Amazon US','Growing':'增长中','Fast-growing':'快速增长','Avg selling price':'平均客单价'};
     var subTxt=_lang==='zh'?(subMap[c.sub]||c.sub.replace(/Rank #(\d+)/,'排名 #$1').replace('- T12M','').replace('pts share YoY','pts 份额同比')):c.sub;
-    return '<div class="card '+cls+'"><div class="lbl" data-i18n="'+['catSize','yoyGrowth','topBrand','catAsp','brandShare'][i]+'">'+c.lbl+'</div><div class="val">'+c.val+'</div><div class="sub">'+subTxt+'</div></div>';
+    var lblKey=['catSize','yoyGrowth','topBrand','catAsp','brandShare'][i];
+    return '<div class="card '+cls+'"><div class="lbl">'+t(lblKey,c.lbl)+'</div><div class="val">'+c.val+'</div><div class="sub">'+subTxt+'</div></div>';
   }).join('');
 
   var brands=d.brands.map(function(b){
@@ -662,13 +663,13 @@ function renderCat(key){
     '<div class="cards">'+cards+'</div>'+
     '<div class="acc" style="margin-bottom:12px"><div class="ahdr open" onclick="tAcc(this)">'+
     '<span>'+(_lang==='zh'?'头部 '+d.topN+' 品牌 · '+d.label:'Top '+d.topN+' Brands, '+d.label)+'</span>'+
-    '<span style="font-size:11px;font-weight:400;color:var(--muted);margin-left:8px">T12M &middot; Amazon US</span>'+
+    '<span style="font-size:11px;font-weight:400;color:var(--muted);margin-left:8px">'+t('t12mLabel','T12M · Amazon US')+'</span>'+
     '<span class="achv" style="margin-left:auto">&#9650;</span>'+
     '</div><div class="abody open">'+
     '<div class="twrap"><div class="tscroll"><table><thead><tr><th style="text-align:left">#</th><th style="text-align:left">'+t('colBrand','Brand')+'</th><th>'+t('colSharePct','Share %')+'</th><th>'+t('colYoy','YoY (pts)')+'</th><th>ASP</th></tr></thead><tbody>'+brands+'</tbody></table></div></div>'+
     '</div></div>'+
 
-    '<div class="acc"><div class="ahdr open" onclick="tAcc(this)"><span data-i18n="digitalShelf">Digital Shelf, Price Analysis</span><span class="achv">&#9650;</span></div>'+
+    '<div class="acc"><div class="ahdr open" onclick="tAcc(this)"><span>'+t('digitalShelf','Digital Shelf, Price Analysis')+'</span><span class="achv">&#9650;</span></div>'+
     '<div class="abody open">'+
     '<div class="callout">LOVEVOOK ($'+lvAsp+' ASP) '+
       (_lang==='zh'?
@@ -711,7 +712,7 @@ function renderCat(key){
 
     // Listing Health accordion
     
-    '<div class="acc"><div class="ahdr" onclick="tAcc(this)"><span data-i18n="winnability">Digital Search Winnability</span><span class="achv">&#9650;</span></div>'+
+    '<div class="acc"><div class="ahdr" onclick="tAcc(this)"><span>'+t('winnability','Digital Search Winnability')+'</span><span class="achv">&#9650;</span></div>'+
     '<div class="abody">'+
     '<div class="callout">'+(_lang==='zh'?
       'LOVEVOOK 预计正在赢得 <strong>'+wb.win_count.toLocaleString()+' 个搜索词</strong>，每日约产生 <strong>'+wb.win_clicks.toLocaleString()+' 次品牌点击</strong>。另有 <strong>'+(wb.high_count+wb.med_count).toLocaleString()+' 个词</strong>，代表约每日 <strong>'+(wb.high_pot+wb.med_pot).toLocaleString()+' 次</strong>额外潜在点击。数据为方向性估算。':
