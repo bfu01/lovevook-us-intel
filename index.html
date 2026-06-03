@@ -93,7 +93,7 @@ tr.brow:hover td{background:rgba(37,99,235,.12)!important}
 .hval{font-size:19px;font-weight:700}
 .hn{font-size:11px;color:var(--muted);margin-top:3px}
 /* Winnability */
-.wgrid{display:grid;grid-template-columns:280px 1fr;gap:16px}.wgrid.no-kw{grid-template-columns:1fr}
+.wgrid{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}.wgrid.no-kw{grid-template-columns:1fr}
 @media(max-width:900px){.wgrid{grid-template-columns:1fr}}
 .wleft{display:flex;flex-direction:column;gap:6px}
 .wbucket{padding:12px 14px;border-radius:9px;background:var(--card);cursor:pointer;transition:.15s;border:2px solid transparent}
@@ -236,6 +236,7 @@ tr.brow:hover td{background:rgba(37,99,235,.12)!important}
 <script>
 const portData=[{"cat": "Travel Duffel Bags", "x": 190.2, "y": 0.1, "r": 24, "rank": 2, "share": "3.9%", "asp": "$34", "catAsp": "$40", "pot": "20.5%", "col": "rgba(37,99,235,.75)"}, {"cat": "Reusable Lunch Bags", "x": 176.1, "y": 10.1, "r": 20, "rank": 2, "share": "2.9%", "asp": "$38", "catAsp": "$18", "pot": "13.9%", "col": "rgba(37,99,235,.75)"}, {"cat": "Carry-On Luggage", "x": 308.3, "y": 15.6, "r": 20, "rank": 17, "share": "1.7%", "asp": "$89", "catAsp": "$97", "pot": "13.3%", "col": "rgba(37,99,235,.75)"}, {"cat": "Women's Tote Handbags", "x": 80.0, "y": 169.3, "r": 19, "rank": null, "share": "~12%", "asp": "$36", "catAsp": "-", "pot": "12.0%", "col": "rgba(37,99,235,.75)"}, {"cat": "Diaper Backpacks", "x": 40.0, "y": 31.5, "r": 16, "rank": null, "share": "~7%", "asp": "$38", "catAsp": "-", "pot": "7.1%", "col": "rgba(37,99,235,.75)"}, {"cat": "Laptop Messenger Bags", "x": 35.0, "y": 199.3, "r": 15, "rank": null, "share": "~6%", "asp": "$45", "catAsp": "-", "pot": "6.2%", "col": "rgba(37,99,235,.75)"}, {"cat": "Women's Fashion Backpacks", "x": 30.0, "y": -2.5, "r": 14, "rank": null, "share": "~5%", "asp": "$25", "catAsp": "-", "pot": "4.9%", "col": "rgba(220,38,38,.7)"}, {"cat": "Travel Tote Bags", "x": 25.0, "y": 0.0, "r": 13, "rank": null, "share": "~4%", "asp": "$37", "catAsp": "-", "pot": "4.1%", "col": "rgba(37,99,235,.5)"}, {"cat": "Women's Shoulder Handbags", "x": 20.0, "y": -5.6, "r": 11, "rank": null, "share": "~3%", "asp": "$37", "catAsp": "-", "pot": "2.5%", "col": "rgba(220,38,38,.6)"}, {"cat": "Other categories", "x": 30.0, "y": 5.0, "r": 21, "rank": null, "share": "-", "asp": "$30", "catAsp": "-", "pot": "15.3%", "col": "rgba(196,211,227,.5)"}];
 const catData={"duffel": {"label": "Travel Duffel Bags", "topN": 20, "statCards": [{"lbl": "Category Size", "val": "$190M", "sub": "T12M - Amazon US"}, {"lbl": "YoY Growth", "val": "+6.3%", "sub": "Growing"}, {"lbl": "Top Brand", "val": "BAGSMART 4.9%", "sub": "+0.7pts share YoY"}, {"lbl": "Cat. ASP", "val": "$40", "sub": "Avg selling price"}, {"lbl": "LOVEVOOK Share", "val": "3.9%", "sub": "Rank #2 - T12M"}], "brands": [{"r": 1, "n": "BAGSMART", "s": 4.9, "y": 0.7, "asp": 27}, {"r": 2, "n": "LOVEVOOK", "s": 3.9, "y": -0.8, "asp": 34, "isN": true}, {"r": 3, "n": "Samsonite", "s": 3.0, "y": 0.5, "asp": 66}, {"r": 4, "n": "GONEX", "s": 3.0, "y": -0.4, "asp": 55}, {"r": 5, "n": "Vera Bradley", "s": 2.8, "y": -0.3, "asp": 85}, {"r": 6, "n": "ETRONIK", "s": 2.8, "y": -2.2, "asp": 28}, {"r": 7, "n": "Carhartt", "s": 2.1, "y": -0.4, "asp": 85}, {"r": 8, "n": "Osprey", "s": 1.8, "y": 0.1, "asp": 172}, {"r": 9, "n": "Amazon Basics", "s": 1.6, "y": 0.1, "asp": 88}, {"r": 10, "n": "Wrangler", "s": 1.5, "y": 0.2, "asp": 49}, {"r": 11, "n": "FMEIDA", "s": 1.5, "y": 1.0, "asp": 18}, {"r": 12, "n": "Halfday", "s": 1.5, "y": 1.3, "asp": 135}, {"r": 13, "n": "Travelers Club", "s": 1.4, "y": 0.3, "asp": 36}, {"r": 14, "n": "Urtala", "s": 1.4, "y": 0.0, "asp": 32}, {"r": 15, "n": "Puma", "s": 1.3, "y": 0.1, "asp": 21}, {"r": 16, "n": "Luocip", "s": 1.3, "y": 0.2, "asp": 30}, {"r": 17, "n": "Narwey", "s": 1.2, "y": -0.7, "asp": 16}, {"r": 18, "n": "Pacific Gear", "s": 1.2, "y": 0.2, "asp": 56}, {"r": 19, "n": "Vogewood", "s": 1.0, "y": 0.7, "asp": 38}, {"r": 20, "n": "Capolo", "s": 0.9, "y": 0.5, "asp": 23}], "asins": [{"n": "Travel Duffle Bag (Black)", "p": 28, "rat": 4.8, "rev": 991224, "yoy": -27.2, "reviews": 3638, "aplus": true, "video": true, "seo": 10, "isN": true}, {"n": "Travel Duffle Bag (Beige)", "p": 29, "rat": 4.8, "rev": 481049, "yoy": -36.8, "reviews": 3641, "aplus": true, "video": true, "seo": 10, "isN": true}, {"n": "Weekender Bag w/ 6 Cubes", "p": 37, "rat": 4.6, "rev": 207408, "yoy": -27.3, "reviews": 1400, "aplus": true, "video": true, "seo": 10, "isN": true}, {"n": "Travel Duffle 3-Piece Set", "p": 32, "rat": 4.8, "rev": 175463, "yoy": 134.8, "reviews": 570, "aplus": true, "video": true, "seo": 10, "isN": true}, {"n": "Large Travel Duffle Black", "p": 35, "rat": 4.6, "rev": 166955, "yoy": null, "reviews": 576, "aplus": true, "video": true, "seo": 10, "isN": true}, {"n": "Puffer Weekender 2Pcs", "p": 32, "rat": 4.6, "rev": 163694, "yoy": null, "reviews": 369, "aplus": true, "video": true, "seo": 10, "isN": true}], "buybox": {"primary_pct": 17.8, "lost_pct": 71.9}, "winn": {"win_count": 2143, "win_clicks": 11691, "win_pot": 2393, "high_count": 1234, "high_clicks": 8477, "high_pot": 26780, "med_count": 2455, "med_clicks": 6071, "med_pot": 16155, "low_count": 3277, "low_clicks": 4878, "low_pot": 12109, "vlow_count": 6222, "vlow_clicks": 4844, "vlow_pot": 6949, "adv_pct_win": 49.5, "adv_pct_high": 31.2, "adv_pct_med": 31.9, "avg_pos_win": 2.5, "avg_pos_high": 21.5, "avg_pos_med": 20.1}, "data_gap_note": "Rankings sourced from Pattern Intelligence. For a more complete competitor view, ask your Sales Engineer to supplement with SmartScout data."}, "lunch": {"label": "Reusable Lunch Bags", "topN": 20, "statCards": [{"lbl": "Category Size", "val": "$176M", "sub": "T12M - Amazon US"}, {"lbl": "YoY Growth", "val": "+10.1%", "sub": "Fast-growing"}, {"lbl": "Top Brand", "val": "Flowfly 3.7%", "sub": "-0.3pts share YoY"}, {"lbl": "Cat. ASP", "val": "$18", "sub": "Avg selling price"}, {"lbl": "LOVEVOOK Share", "val": "2.9%", "sub": "Rank #2 - T12M"}], "brands": [{"r": 1, "n": "Flowfly", "s": 3.7, "y": -0.3, "asp": 13}, {"r": 2, "n": "LOVEVOOK", "s": 2.9, "y": 2.2, "asp": 38, "isN": true}, {"r": 3, "n": "Lifewit", "s": 2.9, "y": 0.5, "asp": 13}, {"r": 4, "n": "Fit & Fresh", "s": 2.8, "y": 0.7, "asp": 26}, {"r": 5, "n": "PackIt", "s": 2.5, "y": -0.1, "asp": 20}, {"r": 6, "n": "Femuar", "s": 2.4, "y": 0.2, "asp": 12}, {"r": 7, "n": "Simple Modern", "s": 2.0, "y": 0.5, "asp": 27}, {"r": 8, "n": "BAGSMART", "s": 1.9, "y": 1.5, "asp": 23}, {"r": 9, "n": "YETI", "s": 1.7, "y": 0.1, "asp": 99}, {"r": 10, "n": "Coobiiya", "s": 1.7, "y": -0.4, "asp": 9}, {"r": 11, "n": "Bluboon", "s": 1.5, "y": -0.1, "asp": 14}, {"r": 12, "n": "Hydro Flask", "s": 1.4, "y": 0.6, "asp": 49}, {"r": 13, "n": "Vera Bradley", "s": 1.4, "y": -0.2, "asp": 33}, {"r": 14, "n": "ZM-Youtoo", "s": 1.4, "y": 0.3, "asp": 15}, {"r": 15, "n": "Miycoo", "s": 1.3, "y": 0.2, "asp": 21}, {"r": 16, "n": "MIER", "s": 1.3, "y": -0.6, "asp": 22}, {"r": 17, "n": "Lovoeo", "s": 1.3, "y": 0.4, "asp": 8}, {"r": 18, "n": "Adidas", "s": 1.2, "y": -0.1, "asp": 21}, {"r": 19, "n": "Glenkey", "s": 1.2, "y": -0.6, "asp": 28}, {"r": 20, "n": "Kate Spade", "s": 1.2, "y": -0.1, "asp": 34}], "asins": [{"n": "Lunch Tote 15.6in Laptop (Black)", "p": 47, "rat": 4.5, "rev": 629336, "yoy": null, "reviews": 873, "aplus": true, "video": true, "seo": 10, "isN": true}, {"n": "Insulated Lunch Bag Women", "p": 33, "rat": 4.8, "rev": 359352, "yoy": null, "reviews": 756, "aplus": true, "video": true, "seo": 9.7, "isN": true}, {"n": "Lunch Bag Tote w/ Cup Holder", "p": 59, "rat": 4.6, "rev": 273729, "yoy": null, "reviews": 229, "aplus": true, "video": true, "seo": 10, "isN": true}, {"n": "Insulated Lunch Bag (Value)", "p": 17, "rat": 4.6, "rev": 257624, "yoy": null, "reviews": 1114, "aplus": true, "video": true, "seo": 10, "isN": true}, {"n": "Lunch Tote 15.6in (Brown)", "p": 58, "rat": 4.5, "rev": 108340, "yoy": null, "reviews": 873, "aplus": true, "video": true, "seo": 10, "isN": true}, {"n": "Insulated Lunch Bag (Large)", "p": 27, "rat": 4.6, "rev": 73902, "yoy": null, "reviews": 1114, "aplus": true, "video": true, "seo": 10, "isN": true}], "buybox": {"primary_pct": 1.2, "lost_pct": 91.2}, "winn": {"win_count": 2143, "win_clicks": 11691, "win_pot": 2393, "high_count": 1234, "high_clicks": 8477, "high_pot": 26780, "med_count": 2455, "med_clicks": 6071, "med_pot": 16155, "low_count": 3277, "low_clicks": 4878, "low_pot": 12109, "vlow_count": 6222, "vlow_clicks": 4844, "vlow_pot": 6949, "adv_pct_win": 49.5, "adv_pct_high": 31.2, "adv_pct_med": 31.9, "avg_pos_win": 2.5, "avg_pos_high": 21.5, "avg_pos_med": 20.1}, "data_gap_note": "Rankings sourced from Pattern Intelligence. For a more complete competitor view, ask your Sales Engineer to supplement with SmartScout data."}, "carryon": {"label": "Carry-On Luggage", "topN": 20, "statCards": [{"lbl": "Category Size", "val": "$308M", "sub": "T12M - Amazon US"}, {"lbl": "YoY Growth", "val": "+15.6%", "sub": "Fast-growing"}, {"lbl": "Top Brand", "val": "Samsonite 17.7%", "sub": "-2.4pts share YoY"}, {"lbl": "Cat. ASP", "val": "$97", "sub": "Avg selling price"}, {"lbl": "LOVEVOOK Share", "val": "1.7%", "sub": "Rank #17 - T12M"}], "brands": [{"r": 1, "n": "Samsonite", "s": 17.7, "y": -2.4, "asp": 136}, {"r": 2, "n": "Amazon Basics", "s": 9.6, "y": 3.5, "asp": 67}, {"r": 3, "n": "Travelpro", "s": 5.9, "y": -1.8, "asp": 195}, {"r": 4, "n": "Away", "s": 3.6, "y": 3.4, "asp": 281}, {"r": 5, "n": "Travelers Club", "s": 3.3, "y": -0.3, "asp": 43}, {"r": 6, "n": "Wrangler", "s": 3.1, "y": 0.4, "asp": 48}, {"r": 7, "n": "Rockland", "s": 3.1, "y": -1.6, "asp": 54}, {"r": 8, "n": "BAGSMART", "s": 2.8, "y": 0.1, "asp": 74}, {"r": 9, "n": "HANKE", "s": 2.3, "y": 0.2, "asp": 121}, {"r": 10, "n": "Briggs & Riley", "s": 2.3, "y": -1.4, "asp": 629}, {"r": 11, "n": "Level8", "s": 2.0, "y": 0.1, "asp": 164}, {"r": 12, "n": "Delsey Paris", "s": 2.0, "y": -0.3, "asp": 154}, {"r": 13, "n": "KROSER", "s": 1.9, "y": -1.3, "asp": 83}, {"r": 14, "n": "Nobl Travel", "s": 1.9, "y": 1.4, "asp": 279}, {"r": 15, "n": "Luggex", "s": 1.8, "y": -0.9, "asp": 97}, {"r": 16, "n": "Coolife", "s": 1.7, "y": -2.2, "asp": 81}, {"r": 17, "n": "LOVEVOOK", "s": 1.7, "y": 1.1, "asp": 89, "isN": true}, {"r": 18, "n": "Traveler's Choice", "s": 1.5, "y": 0.0, "asp": 102}, {"r": 19, "n": "American Tourister", "s": 1.5, "y": -0.3, "asp": 75}, {"r": 20, "n": "TUMI", "s": 1.4, "y": -0.1, "asp": 785}], "asins": [{"n": "Carry On 22x14x9 (22-inch)", "p": 89, "rat": 4.6, "rev": 491398, "yoy": null, "reviews": 380, "aplus": true, "video": true, "seo": 10, "isN": true}, {"n": "Carry On 20-inch Suitcase", "p": 80, "rat": 4.5, "rev": 479941, "yoy": null, "reviews": 624, "aplus": true, "video": true, "seo": 10, "isN": true}, {"n": "Carry On 22-inch Women", "p": 81, "rat": 4.5, "rev": 285507, "yoy": null, "reviews": 180, "aplus": true, "video": true, "seo": 10, "isN": true}, {"n": "Carry On 20-inch Blue", "p": 83, "rat": 4.6, "rev": 272337, "yoy": null, "reviews": 323, "aplus": true, "video": true, "seo": 10, "isN": true}, {"n": "4-Piece Carry On Set", "p": 80, "rat": 4.6, "rev": 208578, "yoy": null, "reviews": 370, "aplus": true, "video": true, "seo": 10, "isN": true}, {"n": "Carry On 22-inch 49L", "p": 113, "rat": 4.6, "rev": 227158, "yoy": null, "reviews": 142, "aplus": true, "video": true, "seo": 10, "isN": true}], "buybox": {"primary_pct": 11.5, "lost_pct": 82.8}, "winn": {"win_count": 2143, "win_clicks": 11691, "win_pot": 2393, "high_count": 1234, "high_clicks": 8477, "high_pot": 26780, "med_count": 2455, "med_clicks": 6071, "med_pot": 16155, "low_count": 3277, "low_clicks": 4878, "low_pot": 12109, "vlow_count": 6222, "vlow_clicks": 4844, "vlow_pot": 6949, "adv_pct_win": 49.5, "adv_pct_high": 31.2, "adv_pct_med": 31.9, "avg_pos_win": 2.5, "avg_pos_high": 21.5, "avg_pos_med": 20.1}, "data_gap_note": "Rankings sourced from Pattern Intelligence. For a more complete competitor view, ask your Sales Engineer to supplement with SmartScout data."}};
+const competitorData={"bagsmart": {"aplus": 98.5, "video": 92.3, "seo": 9.6, "rating": 4.64, "reviews": 6994689}, "samsonite": {"aplus": 90.8, "video": 66.6, "seo": 8.6, "rating": 4.34, "reviews": 5515004}, "gonex": {"aplus": null, "video": null, "seo": null, "rating": null, "reviews": 1353168}, "vera bradley": {"aplus": 86.4, "video": 21.3, "seo": 6.4, "rating": 4.66, "reviews": 11265696}, "etronik": {"aplus": 90.7, "video": 67.4, "seo": 10.0, "rating": 4.55, "reviews": 504510}, "carhartt": {"aplus": null, "video": null, "seo": 6.5, "rating": 4.25, "reviews": 2408876}, "osprey": {"aplus": 95.7, "video": 85.2, "seo": 6.3, "rating": 4.62, "reviews": 1315296}, "amazon basics": {"aplus": null, "video": null, "seo": null, "rating": 4.55, "reviews": 198566258}, "wrangler": {"aplus": null, "video": null, "seo": 5.0, "rating": 4.41, "reviews": 646529}, "flowfly": {"aplus": 94.3, "video": 46.2, "seo": 9.2, "rating": 4.58, "reviews": 2753834}, "lifewit": {"aplus": 99.0, "video": 87.1, "seo": 9.9, "rating": 4.55, "reviews": 9920329}, "fit & fresh": {"aplus": 86.6, "video": 93.4, "seo": 9.4, "rating": 4.63, "reviews": 1501878}, "packit": {"aplus": null, "video": null, "seo": null, "rating": null, "reviews": 115190}, "femuar": {"aplus": 97.9, "video": 80.1, "seo": 9.5, "rating": 4.52, "reviews": 723988}, "simple modern": {"aplus": 90.5, "video": 71.5, "seo": 7.7, "rating": 4.64, "reviews": 25370394}, "yeti": {"aplus": 83.5, "video": 26.7, "seo": 6.4, "rating": 4.75, "reviews": 36498385}, "hydro flask": {"aplus": 88.3, "video": 70.8, "seo": 8.0, "rating": 4.63, "reviews": 11098573}, "travelpro": {"aplus": 90.5, "video": 82.6, "seo": 9.5, "rating": 4.43, "reviews": 1674412}, "away": {"aplus": 100.0, "video": 93.2, "seo": 10.0, "rating": 4.56, "reviews": 25092}, "rockland": {"aplus": 97.9, "video": 72.8, "seo": 5.7, "rating": 4.26, "reviews": 7879350}, "briggs & riley": {"aplus": 98.9, "video": 57.1, "seo": 8.0, "rating": 4.36, "reviews": 116789}, "american tourister": {"aplus": null, "video": null, "seo": null, "rating": 4.38, "reviews": 1274256}, "tumi": {"aplus": 31.5, "video": 47.2, "seo": 7.7, "rating": 4.38, "reviews": 128436}, "coolife": {"aplus": 99.6, "video": 91.1, "seo": 8.9, "rating": 4.59, "reviews": 2936105}, "lovevook": {"aplus": 95.4, "video": 92.3, "seo": 9.6, "rating": 4.65, "reviews": 4024359}};
 const catKeys=["duffel","lunch","carryon"];
 const newCats=[{"name": "Toiletry Bags", "size": 121.8, "yoy": 11.9, "tier": "top", "topBrand": "BAGSMART", "topBrandShare": 29.4, "asp": 18, "brandAsp": 46, "isTopPick": true, "rationale": "Toiletry Bags is a $122M category growing 12% year on year with no current LOVEVOOK presence. The market leader BAGSMART holds 29.4% at an $18 ASP, leaving a clear mid-to-premium tier ($25-40) uncontested.", "patternRole": "Pattern would position LOVEVOOK in the $28-35 tier with A+ lifestyle imagery anchored to travel packing \u2014 cross-selling directly into the existing Travel Duffel Bags audience.", "brands": [{"r": 1, "n": "BAGSMART", "s": 29.4, "asp": 18}, {"r": 2, "n": "Nishel", "s": 6.0, "asp": 18}, {"r": 3, "n": "HOTOR", "s": 2.7, "asp": 14}, {"r": 4, "n": "Vorspack", "s": 2.4, "asp": 12}, {"r": 5, "n": "Narwey", "s": 2.3, "asp": 16}, {"r": 6, "n": "Elviros", "s": 2.0, "asp": 21}, {"r": 7, "n": "Pavilia", "s": 1.7, "asp": 20}, {"r": 8, "n": "Packism", "s": 1.6, "asp": 12}], "asins": [{"n": "BAGSMART Toiletry Bag", "p": 18, "rat": 4.5, "rev": 280000, "yoy": 14}, {"n": "Nishel Hanging Toiletry", "p": 18, "rat": 4.6, "rev": 95000, "yoy": 8}, {"n": "HOTOR Travel Kit", "p": 14, "rat": 4.3, "rev": 62000, "yoy": 5}, {"n": "Elviros Dopp Kit", "p": 21, "rat": 4.4, "rev": 48000, "yoy": 6}, {"n": "Pavilia Toiletry Pouch", "p": 20, "rat": 4.4, "rev": 39000, "yoy": 12}]}, {"name": "Gym Tote Bags", "size": 7.4, "yoy": 13.1, "tier": "medium", "topBrand": "BAGSMART", "topBrandShare": 21.4, "asp": 22, "brandAsp": 46, "isTopPick": false, "rationale": "Gym Tote Bags is growing 13% year on year and attracts the same active-lifestyle women who buy LOVEVOOK&#8217;s travel duffels \u2014 a natural adjacency at $7M.", "patternRole": "Pattern would leverage LOVEVOOK&#8217;s existing gym bag ASIN reviews and content infrastructure to enter at $28-35, differentiating on shoe compartments and wet pockets already present in the duffel line.", "brands": [{"r": 1, "n": "BAGSMART", "s": 21.4, "asp": 27}, {"r": 2, "n": "May Tree", "s": 10.0, "asp": 16}, {"r": 3, "n": "HOTOR", "s": 7.9, "asp": 20}, {"r": 4, "n": "HYC00", "s": 7.4, "asp": 19}, {"r": 5, "n": "Adidas", "s": 7.0, "asp": 33}], "asins": [{"n": "BAGSMART Gym Tote", "p": 27, "rat": 4.4, "rev": 28000, "yoy": 13}, {"n": "May Tree Gym Bag", "p": 16, "rat": 4.3, "rev": 18000, "yoy": 9}, {"n": "HYC00 Gym Tote", "p": 19, "rat": 4.2, "rev": 14000, "yoy": 11}, {"n": "Adidas Squad Tote", "p": 33, "rat": 4.5, "rev": 12000, "yoy": 5}]}, {"name": "Travel Packing Organizers", "size": 132.5, "yoy": -5.3, "tier": "lower", "topBrand": "BAGAIL", "topBrandShare": 20.8, "asp": 24, "brandAsp": 46, "isTopPick": false, "rationale": "Travel Packing Organizers is a $133M category but unit growth has contracted 5% year on year. The opportunity exists but category momentum needs monitoring before entry.", "patternRole": "Pattern would recommend monitoring this category for 6-12 months before entry. If growth stabilises, LOVEVOOK&#8217;s travel positioning makes it a natural fit for a bundle play alongside carry-on luggage.", "brands": [{"r": 1, "n": "BAGAIL", "s": 20.8, "asp": 22}, {"r": 2, "n": "Olarhike", "s": 7.6, "asp": 29}, {"r": 3, "n": "BAGSMART", "s": 7.2, "asp": 31}, {"r": 4, "n": "Veken", "s": 6.5, "asp": 20}, {"r": 5, "n": "Amazon Essentials", "s": 3.5, "asp": 18}], "asins": [{"n": "BAGAIL Packing Cubes 6-Set", "p": 22, "rat": 4.6, "rev": 185000, "yoy": -5}, {"n": "Olarhike Compression Cubes", "p": 29, "rat": 4.5, "rev": 72000, "yoy": -3}, {"n": "BAGSMART Packing Cubes", "p": 31, "rat": 4.4, "rev": 64000, "yoy": -4}, {"n": "Veken 8-Set Packing Cubes", "p": 20, "rat": 4.5, "rev": 58000, "yoy": -6}]}];
 const zh={"tab1": "\u54c1\u724c\u6982\u89c8", "tab2": "\u54c1\u7c7b\u5206\u6790", "tab3": "\u65b0\u54c1\u7c7b\u673a\u4f1a", "catSize": "\u54c1\u7c7b\u89c4\u6a21", "yoyGrowth": "\u540c\u6bd4\u589e\u957f", "topBrand": "\u5934\u90e8\u54c1\u724c", "catAsp": "\u54c1\u7c7b\u5747\u4ef7", "brandShare": "\u54c1\u724c\u4efd\u989d", "digitalShelf": "\u6570\u5b57\u8d27\u67b6\u5206\u6790", "listingHealth": "\u5546\u54c1\u5065\u5eb7\u5ea6", "winnability": "\u641c\u7d22\u53ef\u8d62\u6027\u5206\u6790", "budget": "\u5e73\u4ef7", "mid": "\u4e2d\u6863", "premium": "\u9ad8\u7aef", "aplus": "A+\u5185\u5bb9", "video": "\u89c6\u9891", "seo": "SEO\u8bc4\u5206", "buyboxLabel": "\u8d2d\u7269\u8f66\u5360\u6709\u7387", "lostBuybox": "\u4e09\u65b9\u5356\u5bb6\u63a7\u5236", "winning": "\u6b63\u5728\u8d62\u5f97", "high": "\u9ad8\u6f5c\u529b", "medium": "\u4e2d\u7b49\u6f5c\u529b", "low": "\u4f4e\u6f5c\u529b", "veryLow": "\u975e\u5e38\u4f4e", "newCatTitle": "\u65b0\u54c1\u7c7b\u673a\u4f1a", "topRec": "\u91cd\u70b9\u63a8\u8350", "topBrands": "\u5934\u90e8\u54c1\u724c", "topAsins": "\u70ed\u9500\u5546\u54c1", "digitalShelfTab": "\u6570\u5b57\u8d27\u67b6", "preparedBy": "\u7531 Pattern \u63d0\u4f9b", "dataNote": "\u6570\u636e\u6765\u6e90\uff1aPattern Intelligence", "download": "\u4e0b\u8f7d", "portfolioTitle": "\u54c1\u7c7b\u7ec4\u5408\u5206\u6790", "portfolioTableTitle": "\u7ec4\u5408\u6982\u51b5", "brandTableTitle": "\u5934\u90e8\u54c1\u724c\u6392\u540d", "patternRole": "Pattern \u7684\u89d2\u8272"};
@@ -300,6 +301,126 @@ function showBBAlert(){
 }
 
 // ── Portfolio chart ───────────────────────────────────────────────────────────
+
+// Chart.js inline label plugin for bubble charts
+const bubbleLabelPlugin = {
+  id: 'bubbleLabels',
+  afterDatasetsDraw(chart) {
+    var ctx = chart.ctx;
+    chart.data.datasets.forEach(function(ds, i) {
+      var meta = chart.getDatasetMeta(i);
+      if (meta.hidden) return;
+      meta.data.forEach(function(el) {
+        var label = ds.label || '';
+        if (!label || label === 'LOVEVOOK entry') return;
+        // Truncate long labels
+        var displayLabel = label.length > 12 ? label.substring(0, 11) + '.' : label;
+        ctx.save();
+        ctx.font = '10px Inter, system-ui, sans-serif';
+        ctx.fillStyle = document.body.getAttribute('data-theme') === 'dark' ? '#F9FAFB' : '#111827';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        // Position label above bubble
+        var r = el.options && el.options.radius ? el.options.radius : 8;
+        ctx.fillText(displayLabel, el.x, el.y - r - 5);
+        ctx.restore();
+      });
+    });
+  }
+};
+
+function renderTierBubbleChart(key, d, tier) {
+  var allAsps = d.brands.map(function(b){return b.asp;}).filter(function(x){return x>0;});
+  var minA = Math.min.apply(null, allAsps), maxA = Math.max.apply(null, allAsps);
+  var budHi = Math.round(minA+(maxA-minA)*0.33), midHi = Math.round(minA+(maxA-minA)*0.66);
+  var lo = tier==='budget'?0:tier==='mid'?budHi+1:midHi+1;
+  var hi = tier==='budget'?budHi:tier==='mid'?midHi:999999;
+
+  var tierBrands = d.brands.filter(function(b){return b.asp>=lo && b.asp<=hi;});
+  var mx = Math.max.apply(null, tierBrands.map(function(b){return b.s;})) || 1;
+
+  var datasets = tierBrands.map(function(b){
+    var col = b.isN ? '#2563EB' : (b.y>0 ? '#16A34A' : b.y<0 ? '#DC2626' : '#9CA3AF');
+    var alpha = b.isN ? 0.9 : 0.75;
+    var r = Math.max(8, Math.min(28, 8+20*(b.s/mx)));
+    return {
+      label: b.n,
+      data: [{x: b.asp, y: b.y||0, r: r}],
+      backgroundColor: b.isN ? 'rgba(37,99,235,0.85)' :
+        (b.y>0 ? 'rgba(22,163,74,0.7)' : b.y<0 ? 'rgba(220,38,38,0.7)' : 'rgba(156,163,175,0.6)'),
+      borderColor: col,
+      borderWidth: b.isN ? 2 : 1
+    };
+  });
+
+  var canvas = document.getElementById('tier-chart-'+key);
+  if (!canvas) return;
+  var ec = Chart.getChart(canvas); if(ec) ec.destroy();
+
+  new Chart(canvas, {
+    type: 'bubble',
+    plugins: [bubbleLabelPlugin],
+    data: {datasets: datasets},
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      layout: {padding: {top: 20}},
+      plugins: {
+        legend: {display: false},
+        tooltip: {callbacks: {label: function(ctx){
+          var b = tierBrands[ctx.datasetIndex];
+          return [b.n, 'ASP: $'+b.asp, 'YoY: '+(b.y>=0?'+':'')+b.y+'pts', 'Share: '+b.s.toFixed(1)+'%'];
+        }}}
+      },
+      scales: {
+        x: {grid:{color:gridCol()}, ticks:{color:tickCol(),font:{size:11}}, title:{display:true,text:'ASP ($)',color:tickCol(),font:{size:11}}},
+        y: {grid:{color:gridCol()}, ticks:{color:tickCol(),font:{size:11},callback:function(v){return (v>=0?'+':'')+v+'pts';}}, title:{display:true,text:'YoY Growth (pts)',color:tickCol(),font:{size:11}}}
+      }
+    }
+  });
+
+  // Render brand detail table
+  renderTierBrandTable(key, d, tierBrands);
+}
+
+function renderTierBrandTable(key, d, tierBrands) {
+  var el = document.getElementById('tier-table-'+key);
+  if (!el) return;
+
+  // Sort: LOVEVOOK first, then by share desc
+  var sorted = tierBrands.slice().sort(function(a,b){
+    if(a.isN) return -1; if(b.isN) return 1;
+    return b.s - a.s;
+  });
+
+  var lovRev = d.asins && d.asins.length ? (d.asins.reduce(function(s,a){return s+a.reviews;},0)/d.asins.length).toFixed(0) : 'n/a';
+
+  var rows = sorted.map(function(b){
+    var ckey = b.n.toLowerCase();
+    var cd = competitorData[ckey] || {};
+    var isl = b.isN;
+    var aplusVal = isl ? '95.4%' : (cd.aplus!=null ? cd.aplus.toFixed(0)+'%' : '—');
+    var videoVal = isl ? '92.3%' : (cd.video!=null ? cd.video.toFixed(0)+'%' : '—');
+    var seoVal = isl ? '9.6' : (cd.seo!=null ? cd.seo.toFixed(1) : '—');
+    var ratingVal = isl ? '4.65' : (cd.rating!=null ? cd.rating.toFixed(2) : '—');
+    var revVal = isl ? (4024359).toLocaleString() : (cd.reviews!=null ? cd.reviews.toLocaleString() : '—');
+    var rowStyle = isl ? 'background:rgba(37,99,235,.07);font-weight:700;color:var(--pos)' : '';
+
+    return '<tr style="'+rowStyle+'">'+
+      '<td style="text-align:left;font-weight:'+(isl?700:500)+'">'+b.n+(isl?' &#9733;':'')+'</td>'+
+      '<td>$'+b.asp+'</td>'+
+      '<td class="'+(b.y>0?'pos-v':b.y<0?'neg-v':'')+'">'+(b.y>=0?'+':'')+b.y+'pts</td>'+
+      '<td>'+b.s.toFixed(1)+'%</td>'+
+      '<td>'+aplusVal+'</td>'+
+      '<td>'+videoVal+'</td>'+
+      '<td>'+seoVal+'</td>'+
+      '<td>'+ratingVal+'</td>'+
+      '<td>'+revVal+'</td>'+
+    '</tr>';
+  }).join('');
+
+  el.innerHTML = rows;
+}
+
 function buildPortChart(){
   new Chart(document.getElementById('portChart'),{
     type:'bubble',
@@ -358,7 +479,7 @@ function renderCat(key){
     return '<tr class="'+(b.isN?'brow':'')+'">'+
       '<td style="color:var(--muted);font-size:12px">'+b.r+(b.isN?' &#9733;':'')+'</td>'+
       '<td style="font-weight:'+(b.isN?700:400)+'">'+b.n+'</td>'+
-      '<td><div class="sbar-w"><div class="sbar-bg"><div class="sbar-f" style="width:'+w+'px"></div></div></div></td>'+
+      
       '<td class="'+(b.y>0?'pos-v':b.y<0?'neg-v':'')+'">'+b.s.toFixed(1)+'%</td>'+
       '<td class="'+(b.y>0?'pos-v':b.y<0?'neg-v':'')+'">'+(b.y!==null&&b.y!==undefined?(b.y>=0?'+':'')+b.y.toFixed(1)+'pts':'-')+'</td>'+
       '<td>$'+b.asp+'</td></tr>';
@@ -399,14 +520,23 @@ function renderCat(key){
   var maxClicks=Math.max.apply(null,wbuckets.map(function(b){return b.cur+b.pot;}));
 
   var wLeftHtml=wbuckets.map(function(b,i){
-    var curW=Math.round(b.cur/(maxClicks)*220);
-    var potW=Math.round((b.cur+b.pot)/(maxClicks)*220);
+    var total=b.cur+b.pot;
+    var curPct=total>0?Math.round((b.cur/total)*100):0;
+    var potPct=100-curPct;
     return '<div class="wbucket'+(i===0?' on':'')+'" style="color:'+b.col+'" onclick="showWBucketEl(this)" data-bkey="'+b.key+'" data-ckey="'+key+'">'+
       '<div class="wb-hdr"><span class="wb-label" style="color:'+b.col+'">'+b.label+' &middot; '+b.count.toLocaleString()+' kws</span>'+
       '<span class="wb-counts">'+b.cur.toLocaleString()+' current &middot; +'+b.pot.toLocaleString()+' potential</span></div>'+
       '<div class="wb-bars">'+
-      '<div class="wb-bar-row"><span class="wb-bar-lbl">Current</span><div class="wb-bar-bg"><div class="wb-bar-fill" style="width:'+curW+'px;background:'+b.col+'"></div></div><span class="wb-bar-val" style="color:'+b.col+'">'+b.cur.toLocaleString()+'/day</span></div>'+
-      '<div class="wb-bar-row"><span class="wb-bar-lbl">Potential</span><div class="wb-bar-bg"><div class="wb-bar-fill" style="width:'+potW+'px;background:'+b.col+';opacity:.4"></div></div><span class="wb-bar-val" style="color:'+b.col+'">+'+b.pot.toLocaleString()+'/day</span></div>'+
+      '<div class="wb-bar-row"><span class="wb-bar-lbl">Current</span>'+
+      '<div class="wb-bar-bg" style="position:relative;width:200px;height:9px;background:var(--border);border-radius:4px;overflow:hidden">'+
+        '<div style="position:absolute;left:0;top:0;height:100%;width:'+curPct+'%;background:'+b.col+';border-radius:4px 0 0 4px"></div>'+
+        '<div style="position:absolute;left:'+curPct+'%;top:0;height:100%;width:'+potPct+'%;background:'+b.col+';opacity:.25;border-radius:0 4px 4px 0"></div>'+
+      '</div>'+
+      '<span class="wb-bar-val" style="color:'+b.col+'">'+curPct+'%</span></div>'+
+      '<div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted);padding:2px 0 0">'+
+        '<span>'+b.cur.toLocaleString()+'/day captured</span>'+
+        '<span>+'+b.pot.toLocaleString()+'/day available</span>'+
+      '</div>'+
       '</div></div>';
   }).join('');
 
@@ -437,15 +567,21 @@ function renderCat(key){
     '<div class="csub" id="shelf-sub-'+key+'">ASP vs revenue share &middot; blue = LOVEVOOK &middot; grey = competitors &middot; click a tier to highlight</div>'+
     '<div style="position:relative;height:260px"><canvas id="sc-'+key+'"></canvas></div>'+
     '</div>'+
-    '<div class="tbts" id="tbts-'+key+'">'+
-    '<button class="tbt on" onclick="setTierFromBtn(this)" data-tier="budget">Budget ($'+minA+'-$'+budHi+')</button>'+
-    '<button class="tbt" onclick="setTierFromBtn(this)" data-tier="mid">Mid ($'+(budHi+1)+'-$'+midHi+') &middot; '+
-      (lvAsp<=budHi?'below LOVEVOOK':lvAsp<=midHi?'LOVEVOOK entry':'below LOVEVOOK')+'</button>'+
-    '<button class="tbt" onclick="setTierFromBtn(this)" data-tier="premium">Premium ($'+(midHi+1)+'+)'+
-      (lvAsp>midHi?' &middot; LOVEVOOK entry':'')+' </button>'+
+    '<div class="tbts" id="tbts-'+key+'" data-idx="'+key+'" style="margin-bottom:12px">'+
+    '<button class="tbt '+(lvAsp<=budHi?'on':'')+'" onclick="setTierFromBtn(this)" data-tier="budget">Budget ($'+minA+'-$'+budHi+')'+(lvAsp<=budHi?' &middot; LOVEVOOK':'')+' </button>'+
+    '<button class="tbt '+(lvAsp>budHi&&lvAsp<=midHi?'on':'')+'" onclick="setTierFromBtn(this)" data-tier="mid">Mid ($'+(budHi+1)+'-$'+midHi+')'+(lvAsp>budHi&&lvAsp<=midHi?' &middot; LOVEVOOK':'')+' </button>'+
+    '<button class="tbt '+(lvAsp>midHi?'on':'')+'" onclick="setTierFromBtn(this)" data-tier="premium">Premium ($'+(midHi+1)+'+)'+(lvAsp>midHi?' &middot; LOVEVOOK':'')+' </button>'+
     '</div>'+
-    '<div id="sdesc-'+key+'" class="dn">Budget tier ($'+minA+'-$'+budHi+'): '+
-      d.brands.filter(function(b){return b.asp<=budHi;}).slice(0,5).map(function(b){return b.n+' ($'+b.asp+')';}).join(', ')+'</div>'+
+    '<div style="display:flex;gap:14px;font-size:11px;margin-bottom:12px;color:var(--muted)">'+
+    '<span style="display:flex;align-items:center;gap:4px"><span style="width:9px;height:9px;background:#2563EB;border-radius:50%;display:inline-block"></span>LOVEVOOK</span>'+
+    '<span style="display:flex;align-items:center;gap:4px"><span style="width:9px;height:9px;background:rgba(22,163,74,.7);border-radius:50%;display:inline-block"></span>Growing YoY</span>'+
+    '<span style="display:flex;align-items:center;gap:4px"><span style="width:9px;height:9px;background:rgba(220,38,38,.7);border-radius:50%;display:inline-block"></span>Declining YoY</span>'+
+    '</div>'+
+    '<div style="position:relative;height:220px;margin-bottom:14px"><canvas id="tier-chart-'+key+'"></canvas></div>'+
+    '<div class="twrap" style="margin-bottom:14px"><div class="tscroll" style="max-height:280px"><table>'+
+    '<thead><tr><th style="text-align:left">Brand</th><th>ASP</th><th>YoY</th><th>Share %</th><th>A+</th><th>Video</th><th>SEO</th><th>Rating</th><th>Reviews</th></tr></thead>'+
+    '<tbody id="tier-table-'+key+'"></tbody>'+
+    '</table></div></div>'+
     '<div class="agrid">'+asins+'</div>'+
     '</div></div>'+
 
@@ -477,7 +613,10 @@ function renderCat(key){
   setTimeout(function(){
     buildShelfChart(key,d,shelfBrands);
     showWBucket('win',null,key);
-  },60);
+    // Auto-render the default tier (where LOVEVOOK sits)
+    var defaultTier=lvAsp<=budHi?'budget':lvAsp<=midHi?'mid':'premium';
+    renderTierBubbleChart(key,d,defaultTier);
+  },80);
 }
 
 function setTierFromBtn(btn){setTier(btn.getAttribute("data-tier"),btn);}
@@ -492,9 +631,9 @@ function setTier(tier,btn){
   var lo=tier==='budget'?minA:tier==='mid'?budHi+1:midHi+1;
   var hi=tier==='budget'?budHi:tier==='mid'?midHi:99999;
   var names=d.brands.filter(function(b){return b.asp>=lo&&b.asp<=hi;}).slice(0,6).map(function(b){return b.n+' ($'+b.asp+')';}).join(', ');
-  var el=document.getElementById('sdesc-'+key);
-  if(el) el.textContent=(tier==='budget'?'Budget':tier==='mid'?'Mid':'Premium')+' tier ($'+lo+(hi<99999?'-$'+hi:'+')+'): '+(names||'No brands in this range');
-  // Highlight tier on chart
+  // Render tier bubble chart + brand detail table
+  renderTierBubbleChart(key, d, tier);
+  // Also highlight on main shelf chart if brand view active
   var activeBrandView=document.getElementById('sbv-brand-'+key);
   if(activeBrandView&&activeBrandView.classList.contains('on')){highlightTierOnChart(key,tier,d);}
 }
