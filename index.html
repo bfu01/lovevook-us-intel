@@ -1053,47 +1053,28 @@ function tAcc(hdr){hdr.classList.toggle('open');hdr.nextElementSibling.classList
 function buildOppOverviewChart(){
   var canvas=document.getElementById('oppOverviewChart');
   if(!canvas)return;
+  var ec=Chart.getChart(canvas);if(ec)ec.destroy();
   var tierCols={top:'rgba(22,163,74,.8)',medium:'rgba(217,119,6,.8)',lower:'rgba(156,163,175,.7)'};
   var maxSize=Math.max.apply(null,newCats.map(function(c){return c.size;}));
   var datasets=newCats.map(function(c,i){
-    var basecol=tierCols[c.tier];
+    var col=c.yoy<0?'rgba(220,38,38,.8)':(tierCols[c.tier]||'rgba(37,99,235,.7)');
     var bc=c.yoy<0?'#DC2626':'transparent';
-    var bw=c.yoy<0?2:0;
-    // Negative growth: shift to red regardless of tier
-    var col=c.yoy<0?'rgba(220,38,38,.8)':basecol;
     return {label:c.name,data:[{x:c.size,y:c.yoy,r:Math.max(10,Math.min(40,10+30*Math.sqrt(c.size/maxSize)))}],
-      backgroundColor:col,borderColor:bc,borderWidth:bw,catIdx:i};
+      backgroundColor:col,borderColor:bc,borderWidth:c.yoy<0?2:0};
   });
-  var oppChart=new Chart(canvas,{
+  new Chart(canvas,{
     type:'bubble',
-    plugins:[{
-      id:'oppLabels',
-      afterDatasetsDraw:function(chart){
-        chart.data.datasets.forEach(function(ds,i){
-          var meta=chart.getDatasetMeta(i);
-          meta.data.forEach(function(el){
-            chart.ctx.save();
-            chart.ctx.font='11px Inter,system-ui,sans-serif';
-            chart.ctx.fillStyle=document.body.getAttribute('data-theme')==='dark'?'#F9FAFB':'#111827';
-            chart.ctx.textAlign='center';
-            chart.ctx.textBaseline='top';
-            var lbl=ds.label.length>18?ds.label.substring(0,17)+'.':ds.label;
-            chart.ctx.fillText(lbl,el.x,el.y+el.options.radius+4);
-            chart.ctx.restore();
-          });
-        });
-      }
-    }],
+    plugins:[bubbleLabelPlugin],
     data:{datasets:datasets},
-    options:{responsive:true,maintainAspectRatio:false,layout:{padding:{bottom:30}},
+    options:{responsive:true,maintainAspectRatio:false,layout:{padding:{bottom:28}},
       plugins:{legend:{display:false},tooltip:{callbacks:{label:function(ctx){
         var c=newCats[ctx.datasetIndex];
-        return [c.name,'Size: $'+c.size+'M','YoY: '+(c.yoy>=0?'+':'')+c.yoy+'%','Entry ASP: ~$'+c.entryAsp];
+        return [c.name,'$'+c.size+'M &middot; '+(c.yoy>=0?'+':'')+c.yoy+'% YoY','Entry est. ~$'+c.entryAsp];
       }}},
       onClick:function(e,els){if(els.length){showOpp(els[0].datasetIndex);}}},
       scales:{
         x:{grid:{color:gridCol()},ticks:{color:tickCol(),font:{size:11}},title:{display:true,text:'Category Size ($M)',color:tickCol(),font:{size:11}}},
-        y:{grid:{color:gridCol()},ticks:{color:tickCol(),font:{size:11},callback:function(v){return (v>=0?'+':'')+v+'%';}},title:{display:true,text:'YoY Unit Growth',color:tickCol(),font:{size:11}}}
+        y:{grid:{color:gridCol()},ticks:{color:tickCol(),font:{size:11},callback:function(v){return (v>=0?'+':'')+v+'%';}},title:{display:true,text:'YoY Growth',color:tickCol(),font:{size:11}}}
       }
     }
   });
