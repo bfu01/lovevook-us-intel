@@ -166,8 +166,8 @@ tr.brow:hover td{background:rgba(37,99,235,.12)!important}
   </div>
   <div class="hdr-c">
     <button class="cbtn" onclick="dlDash()">Download</button>
-    <button class="lbtn" id="lbtn" onclick="toggleLang()">&#20013;&#25991;</button>
-    <button class="cbtn" id="tbtn" onclick="toggleTheme()">Dark</button>
+    <button class="lbtn" id="lbtn" onclick="toggleLang()">EN</button>
+    <button class="cbtn" id="tbtn" onclick="toggleTheme()">Light</button>
   </div>
 </header>
 <div id="bb-alert" class="alert-bb" style="display:none">
@@ -264,7 +264,7 @@ const winnKw={"win": [{"kw": "purse", "clicks": 998, "pot": 1080, "pos": "3"}, {
 function toggleTheme(){
   var b=document.body,dk=b.getAttribute('data-theme')==='dark';
   b.setAttribute('data-theme',dk?'light':'dark');
-  document.getElementById('tbtn').textContent=dk?'Dark':'Light';
+  document.getElementById('tbtn').textContent=dk?'Light':'Dark';
   ['ll','fll'].forEach(function(id){document.getElementById(id).style.display=dk?'block':'none';});
   ['ld','fld'].forEach(function(id){document.getElementById(id).style.display=dk?'none':'block';});
 }
@@ -279,10 +279,10 @@ function toggleLang(){
       _origText[k]=el.innerHTML;
     });
     _lang='zh';
-    document.getElementById('lbtn').textContent='EN';
+    document.getElementById('lbtn').textContent='中文';
   } else {
     _lang='en';
-    document.getElementById('lbtn').textContent='中文';
+    document.getElementById('lbtn').textContent='EN';
   }
   document.querySelectorAll('[data-i18n]').forEach(function(el){
     var k=el.getAttribute('data-i18n');
