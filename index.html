@@ -661,7 +661,7 @@ function renderCat(key){
   document.getElementById('cpanels').innerHTML=
     '<div class="cards">'+cards+'</div>'+
     '<div class="acc" style="margin-bottom:12px"><div class="ahdr open" onclick="tAcc(this)">'+
-    '<span data-i18n="brandTableTitle">Top '+d.topN+' Brands, '+d.label+'</span>'+
+    '<span>'+(_lang==='zh'?'头部 '+d.topN+' 品牌 · '+d.label:'Top '+d.topN+' Brands, '+d.label)+'</span>'+
     '<span style="font-size:11px;font-weight:400;color:var(--muted);margin-left:8px">T12M &middot; Amazon US</span>'+
     '<span class="achv" style="margin-left:auto">&#9650;</span>'+
     '</div><div class="abody open">'+
@@ -679,7 +679,7 @@ function renderCat(key){
       (lvAsp>parseFloat((d.statCards[3]?d.statCards[3].val.replace('$',''):0))?t('shelfCalloutAbove','LOVEVOOK is priced above category average.'):t('shelfCalloutBelow','LOVEVOOK is priced near or below category average.'))+'</div>'+
     '<div class="cbox" style="margin-bottom:14px">'+
     '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">'+
-    '<h3 id="shelf-title-'+key+'">Brand Price Positioning, '+d.label+'</h3>'+
+    '<h3 id="shelf-title-'+key+'">'+(_lang==='zh'?'品牌价格定位 · '+d.label:'Brand Price Positioning, '+d.label)+'</h3>'+
     '<div style="display:flex;gap:6px">'+
     '<button class="tbt on" id="sbv-brand-'+key+'" onclick="setShelfView(\'brand\',\''+key+'\')">'+t('brandView','Brand View')+'</button>'+
     '<button class="tbt" id="sbv-asin-'+key+'" onclick="setShelfView(\'asin\',\''+key+'\')">'+t('asinView','ASIN View')+'</button>'+
@@ -725,7 +725,6 @@ function renderCat(key){
       '<div id="wleft-win-'+key+'">'+wbuckets.slice(0,2).map(wLeftHtml).join('')+'</div>'+
       '<div id="wleft-opp-'+key+'">'+wbuckets.slice(2).map(wLeftHtml).join('')+'</div>'+
     '</div>'+
-    '<p class="dn" style="margin-top:12px">'+(_lang==='zh'?'关键词可赢性数据覆盖品牌全量美国搜索词。个体词估算为方向性数据。数据来源：Pattern Intelligence via softy_brand_winnability_summary（winnability_adj阈值：11=正在赢得, 9-11=高, 6-9=中, 3-6=低, 0-3=极低）。':'Keyword winnability data covers LOVEVOOK\'s full US search footprint. Individual term estimates are directional. Source: Pattern Intelligence via softy_brand_winnability_summary (winnability_adj thresholds: 11=Winning, 9-11=High, 6-9=Medium, 3-6=Low, 0-3=Very Low).')+'</p>'+
     '</div></div>';
 
   // Build charts after DOM ready
@@ -1107,7 +1106,7 @@ function buildOppTab(){
         '<div class="om">$'+c.size+'M &middot; '+(c.yoy>=0?'+':'')+c.yoy+'% YoY</div>'+
         '<div class="om">'+t('entryEstCard','Entry est. ~$')+c.entryAsp+'</div>'+
         '<div style="font-size:11px;color:var(--muted);margin-top:5px;line-height:1.4">'+
-          (c.rationale||'')+'</div>'+
+          (_lang==='zh'&&c.rationaleZh?c.rationaleZh:(c.rationale||''))+'</div>'+
         (c.isTopPick?'<div style="margin-top:6px;font-size:10px;font-weight:700;color:#2563EB;text-transform:uppercase">Recommended</div>':'')+
         '</div>';
     }).join('');
@@ -1116,9 +1115,9 @@ function buildOppTab(){
   var lgdEl=document.getElementById('opp-legend');
   if(lgdEl){
     lgdEl.innerHTML='<div style="display:flex;gap:14px;font-size:11px;color:var(--muted);margin-bottom:10px">'+
-      '<span style="display:flex;align-items:center;gap:4px"><span style="width:9px;height:9px;background:#16A34A;border-radius:50%;display:inline-block"></span>Top opportunity</span>'+
-      '<span style="display:flex;align-items:center;gap:4px"><span style="width:9px;height:9px;background:#D97706;border-radius:50%;display:inline-block"></span>Medium</span>'+
-      '<span style="display:flex;align-items:center;gap:4px"><span style="width:9px;height:9px;background:#9CA3AF;border-radius:50%;display:inline-block"></span>Lower priority</span>'+
+      '<span style="display:flex;align-items:center;gap:4px"><span style="width:9px;height:9px;background:#16A34A;border-radius:50%;display:inline-block"></span>'+t('topOpportunity','Top opportunity')+'</span>'+
+      '<span style="display:flex;align-items:center;gap:4px"><span style="width:9px;height:9px;background:#D97706;border-radius:50%;display:inline-block"></span>'+t('mediumOpp','Medium')+'</span>'+
+      '<span style="display:flex;align-items:center;gap:4px"><span style="width:9px;height:9px;background:#9CA3AF;border-radius:50%;display:inline-block"></span>'+t('lowerPriority','Lower priority')+'</span>'+
     '</div>';
   }
   // Render overview chart + auto-expand first category
