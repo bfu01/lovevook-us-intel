@@ -816,10 +816,9 @@ function setShelfView(view,key){
   } else {
     if(tierTableWrap)tierTableWrap.style.display='none';
     if(asinTableWrap)asinTableWrap.style.display='';
-    // Rebuild ASIN chart + apply tier filter
-    buildCombinedAsinChart(key,catData[key]);
+    // Rebuild ASIN chart + apply tier filter (use setTimeout to avoid double-canvas-destroy)
     var tier2=_activeTier[key]||defaultTier(catData[key],getTierBounds(catData[key]));
-    setTier(tier2,null);
+    setTimeout(function(){setTier(tier2,null);},50);
   }
 }
 
@@ -842,8 +841,8 @@ function buildCombinedAsinChart(key,d){
     options:{responsive:true,maintainAspectRatio:false,layout:{padding:{top:20}},
       plugins:{legend:{display:false},tooltip:{callbacks:{label:function(ctx){
         var a=allA[ctx.datasetIndex];
-        return ['['+(a.brand||'LOVEVOOK')+'] '+a.n,'$'+a.p,
-          (a.yoy!=null?(a.yoy>=0?'+':'')+a.yoy.toFixed(1)+'%':'new'),
+        var bl2=a.isN?'LOVEVOOK':(a.brand||'');return ['['+bl2+'] '+a.n,'ASP: $'+a.p,
+          (a.yoy!=null?'YoY: '+(a.yoy>=0?'+':'')+a.yoy.toFixed(1)+'%':'YoY: new'),
           'Reviews: '+((a.reviews||a.current_review_count||0)).toLocaleString()];
       }}}},
       scales:(function(){
@@ -915,7 +914,7 @@ function buildFilteredAsinChart(key,d,allA,lo,hi){
   });
   new Chart(canvas,{type:'bubble',plugins:[bubbleLabelPlugin],data:{datasets:datasets},
     options:{responsive:true,maintainAspectRatio:false,layout:{padding:{top:20}},
-      plugins:{legend:{display:false},tooltip:{callbacks:{label:function(ctx){var a=allA[ctx.datasetIndex];return ['['+a.brand+'] '+a.n,'$'+a.p,(a.yoy!=null?(a.yoy>=0?'+':'')+a.yoy.toFixed(1)+'%':'new')];}}}},
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:function(ctx){var a=allA[ctx.datasetIndex];var bl=a.isN?'LOVEVOOK':(a.brand||'');return ['['+bl+'] '+a.n,'ASP: $'+a.p,(a.yoy!=null?'YoY: '+(a.yoy>=0?'+':'')+a.yoy.toFixed(1)+'%':'YoY: new'),'Reviews: '+((a.reviews||a.current_review_count||0).toLocaleString())];}}}},
       scales:(function(){
         var inTierAs=allA.filter(function(a){return a.p>=lo&&a.p<=hi;});
         var allPs=allA.map(function(a){return a.p;});
@@ -1112,8 +1111,8 @@ function buildOppTab(){
     '</div>';
   var existingLgd=document.getElementById('opp-legend');
   if(existingLgd)existingLgd.innerHTML=lgd;
-  setTimeout(buildOppOverviewChart,80);
   showOpp(0);
+  setTimeout(buildOppOverviewChart,120);
 }
 
 // ── Full category analysis for new category opportunity ───────────────────────
