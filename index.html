@@ -787,8 +787,8 @@ function buildCombinedAsinChart(key,d){
         var dMin=aps.length?Math.min.apply(null,aps):lo;
         var dMax=aps.length?Math.max.apply(null,aps):hi;
         var pad=Math.max((dMax-dMin)*0.4,8);
-        var xMin=Math.max(0,Math.min(lo-5,dMin-pad));
-        var xMax=hi<9999?Math.max(hi+5,dMax+pad):dMax+pad+20;
+        var xMin=Math.max(0,dMin-pad);  // Center on data, not tier lo
+        var xMax=dMax+pad;
         var yoys=tierA.map(function(a){return a.yoy||0;}).filter(function(v){return v!==null;});
         var yMin=yoys.length?Math.min.apply(null,yoys)-15:-30;
         var yMax=yoys.length?Math.max.apply(null,yoys)+15:30;
@@ -843,7 +843,7 @@ function buildFilteredAsinChart(key,d,allA,lo,hi){
       bc=yoy>0?'#16A34A':'#DC2626'; bw=2;
     } else {
       // Out-of-tier: very faint but still shows full picture
-      bg='rgba(156,163,175,.08)'; bc='rgba(0,0,0,.03)'; bw=0.5;
+      bg='rgba(156,163,175,.05)'; bc='rgba(0,0,0,.02)'; bw=0;
     }
     return {label:(a.isN?'[LOVEVOOK] ':'['+a.brand+'] ')+a.n,
       data:[{x:a.p,y:yoy,r:r}],
@@ -895,10 +895,7 @@ function renderAsinTierChart(key,tierA,lo,hi,d){
       backgroundColor:a.isN?'rgba(37,99,235,.9)':'rgba(156,163,175,.65)',
       borderColor:a.isN?'#2563EB':'rgba(0,0,0,.1)',borderWidth:a.isN?2:1};
   });
-  // Add LOVEVOOK entry point marker at tier midpoint
-  var tierMid=Math.round((lo+Math.min(hi,lo+100))/2);
-  datasets.push({label:'Tier range',data:[{x:lo,y:-100,r:1},{x:Math.min(hi,lo+200),y:-100,r:1}],
-    backgroundColor:'transparent',borderColor:'transparent'});
+
   new Chart(canvas,{type:'bubble',plugins:[bubbleLabelPlugin],data:{datasets:datasets},
     options:{responsive:true,maintainAspectRatio:false,layout:{padding:{top:20}},
       plugins:{legend:{display:false},tooltip:{callbacks:{label:function(ctx){
