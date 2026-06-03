@@ -576,8 +576,8 @@ function renderCat(key){
   var shelfBrands=d.brands.map(function(b){
     var tier=b.asp<=budHi?'budget':b.asp<=midHi?'mid':'premium';
     return {label:b.n,data:[{x:b.asp,y:b.s,r:Math.max(5,Math.min(22,5+17*(b.s/mx)))}],
-      backgroundColor:b.isN?'rgba(37,99,235,.85)':'rgba(156,163,175,.45)',
-      borderColor:b.isN?'#2563EB':'rgba(0,0,0,.1)',borderWidth:b.isN?2:1};
+      backgroundColor:b.isN?'rgba(37,99,235,.07)':(b.y>0?'rgba(22,163,74,.8)':'rgba(220,38,38,.78)'),
+      borderColor:b.isN?'#2563EB':(b.y>0?'#16A34A':'#DC2626'),borderWidth:b.isN?3:1.5};
   });
 
   // Winnability
@@ -808,7 +808,7 @@ function setShelfView(view,key){
     // Rebuild brand chart + re-apply tier
     var d=catData[key];
     var mx=Math.max.apply(null,d.brands.map(function(b){return b.s;}));
-    var datasets=d.brands.map(function(b){return {label:b.n,data:[{x:b.asp,y:b.s,r:Math.max(5,Math.min(22,5+17*(b.s/mx)))}],backgroundColor:b.isN?'rgba(37,99,235,.85)':'rgba(156,163,175,.45)',borderColor:b.isN?'#2563EB':'rgba(0,0,0,.1)',borderWidth:b.isN?2:1};});
+    var datasets=d.brands.map(function(b){return {label:b.n,data:[{x:b.asp,y:b.s,r:Math.max(5,Math.min(22,5+17*(b.s/mx)))}],backgroundColor:b.isN?'rgba(37,99,235,.07)':'rgba(156,163,175,.45)',borderColor:b.isN?'#2563EB':'rgba(156,163,175,.35)',borderWidth:b.isN?3:1};});
     buildShelfChart(key,d,datasets);
     // Re-apply active tier
     var tier=_activeTier[key]||defaultTier(d,getTierBounds(d));
@@ -834,8 +834,8 @@ function buildCombinedAsinChart(key,d){
     var r=Math.max(6,Math.min(26,6+20*Math.sqrt((a.rev||1)/maxRev)));
     return {label:(a.isN?'[LOVEVOOK] ':'['+(a.brand||'')+'] ')+a.n,
       data:[{x:a.p,y:a.yoy!=null?a.yoy:0,r:r}],
-      backgroundColor:a.isN?'rgba(37,99,235,.85)':'rgba(156,163,175,.5)',
-      borderColor:a.isN?'#2563EB':'rgba(0,0,0,.1)',borderWidth:a.isN?2:1};
+      backgroundColor:a.isN?'rgba(37,99,235,.07)':'rgba(156,163,175,.45)',
+      borderColor:a.isN?'#2563EB':'rgba(156,163,175,.4)',borderWidth:a.isN?3:1};
   });
   new Chart(canvas,{type:'bubble',plugins:[bubbleLabelPlugin],data:{datasets:datasets},
     options:{responsive:true,maintainAspectRatio:false,layout:{padding:{top:20}},
@@ -898,8 +898,8 @@ function buildFilteredAsinChart(key,d,allA,lo,hi){
     var yoy=a.yoy!=null?a.yoy:0;
     var bg,bc,bw;
     if(a.isN){
-      // LOVEVOOK: always solid blue - always visible
-      bg='rgba(37,99,235,.9)'; bc='#2563EB'; bw=2.5;
+      // LOVEVOOK: hollow blue outline - identifiable without competing with green/red
+      bg='rgba(37,99,235,.07)'; bc='#2563EB'; bw=3;
     } else if(inTier){
       // In-tier competitors: strongly visible, colored by growth direction
       bg=yoy>0?'rgba(22,163,74,.85)':'rgba(220,38,38,.8)';
@@ -953,10 +953,11 @@ function renderAsinTierChart(key,tierA,lo,hi,d){
   var maxRev=Math.max.apply(null,tierA.map(function(a){return a.rev||1;}));
   var datasets=tierA.map(function(a){
     var r=Math.max(7,Math.min(28,7+21*Math.sqrt((a.rev||1)/maxRev)));
-    return {label:(a.isN?'[LOVEVOOK] ':'['+a.brand+'] ')+a.n,
-      data:[{x:a.p,y:a.yoy!=null?a.yoy:0,r:r}],
-      backgroundColor:a.isN?'rgba(37,99,235,.9)':'rgba(156,163,175,.65)',
-      borderColor:a.isN?'#2563EB':'rgba(0,0,0,.1)',borderWidth:a.isN?2:1};
+    var yoy5=a.yoy!=null?a.yoy:0;
+    return {label:(a.isN?'[LOVEVOOK] ':'['+(a.brand||'')+'] ')+a.n,
+      data:[{x:a.p,y:yoy5,r:r}],
+      backgroundColor:a.isN?'rgba(37,99,235,.07)':(yoy5>0?'rgba(22,163,74,.82)':'rgba(220,38,38,.78)'),
+      borderColor:a.isN?'#2563EB':(yoy5>0?'#16A34A':'#DC2626'),borderWidth:a.isN?3:1.5};
   });
 
   new Chart(canvas,{type:'bubble',plugins:[bubbleLabelPlugin],data:{datasets:datasets},
@@ -981,8 +982,8 @@ function highlightTierOnChart(key,tier,d){
     var inTier=b.asp>=lo&&b.asp<=hi;
     var alpha=inTier?0.85:0.12;
     return {label:b.n,data:[{x:b.asp,y:b.s,r:Math.max(5,Math.min(22,5+17*(b.s/mx)))}],
-      backgroundColor:b.isN?'rgba(37,99,235,'+alpha+')':inTier?'rgba(37,99,235,.5)':'rgba(156,163,175,'+alpha+')',
-      borderColor:b.isN?'#2563EB':inTier?'rgba(37,99,235,.6)':'rgba(0,0,0,.03)',borderWidth:b.isN?2:inTier?2:1};
+      backgroundColor:b.isN?'rgba(37,99,235,.07)':inTier?(b.y>0?'rgba(22,163,74,.82)':'rgba(220,38,38,.78)'):'rgba(156,163,175,'+alpha+')',
+      borderColor:b.isN?'#2563EB':inTier?(b.y>0?'#16A34A':'#DC2626'):'rgba(0,0,0,.03)',borderWidth:b.isN?3:inTier?1.5:0.5};
   });
   var canvas=document.getElementById('sc-'+key);
   if(canvas){var ec=Chart.getChart(canvas);if(ec)ec.destroy();}
@@ -1199,8 +1200,8 @@ function buildNewCatChart(i,c){
     });
     // Add LOVEVOOK entry marker
     datasets.push({label:'LOVEVOOK entry (~$'+entryAsp+')',
-      data:[{x:entryAsp,y:0,r:10}],
-      backgroundColor:'rgba(37,99,235,.9)',borderColor:'#2563EB',borderWidth:2.5});
+      data:[{x:entryAsp,y:0,r:11}],
+      backgroundColor:'rgba(37,99,235,.07)',borderColor:'#2563EB',borderWidth:3.5});
   } else {
     var mx2=Math.max.apply(null,c.asins.map(function(a){return a.rev||1;}));
     datasets=c.asins.map(function(a){
@@ -1211,8 +1212,8 @@ function buildNewCatChart(i,c){
       return {label:'['+a.brand+'] '+a.n,data:[{x:a.p,y:yoy,r:r}],backgroundColor:bg,borderColor:inTier?bg:'transparent',borderWidth:inTier?1:0};
     });
     datasets.push({label:'LOVEVOOK entry (~$'+entryAsp+')',
-      data:[{x:entryAsp,y:0,r:10}],
-      backgroundColor:'rgba(37,99,235,.9)',borderColor:'#2563EB',borderWidth:2.5});
+      data:[{x:entryAsp,y:0,r:11}],
+      backgroundColor:'rgba(37,99,235,.07)',borderColor:'#2563EB',borderWidth:3.5});
   }
   
   var allX=datasets.reduce(function(a,ds){return a.concat(ds.data.map(function(p){return p.x;}));}, []);
