@@ -489,8 +489,8 @@ function renderCat(key){
 
   var brands=d.brands.map(function(b){
     return '<tr class="'+(b.isN?'brow':'')+'">'+
-      '<td style="color:var(--muted);font-size:12px">'+b.r+(b.isN?' &#9733;':'')+'</td>'+
-      '<td style="font-weight:'+(b.isN?700:400)+'">'+b.n+'</td>'+
+      '<td style="color:var(--muted);font-size:12px;text-align:left">'+b.r+(b.isN?' &#9733;':'')+'</td>'+
+      '<td style="font-weight:'+(b.isN?700:400)+';text-align:left">'+b.n+'</td>'+
       
       '<td class="'+(b.y>0?'pos-v':b.y<0?'neg-v':'')+'">'+b.s.toFixed(1)+'%</td>'+
       '<td class="'+(b.y>0?'pos-v':b.y<0?'neg-v':'')+'">'+(b.y!==null&&b.y!==undefined?(b.y>=0?'+':'')+b.y.toFixed(1)+'pts':'-')+'</td>'+
