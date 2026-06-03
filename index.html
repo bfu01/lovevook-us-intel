@@ -484,7 +484,6 @@ function renderCat(key){
   }).join('');
 
   var brands=d.brands.map(function(b){
-    var w=Math.min(78,Math.round(b.s/10*78));
     return '<tr class="'+(b.isN?'brow':'')+'">'+
       '<td style="color:var(--muted);font-size:12px">'+b.r+(b.isN?' &#9733;':'')+'</td>'+
       '<td style="font-weight:'+(b.isN?700:400)+'">'+b.n+'</td>'+
