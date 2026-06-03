@@ -325,22 +325,26 @@ const bubbleLabelPlugin = {
   id: 'bubbleLabels',
   afterDatasetsDraw(chart) {
     var ctx = chart.ctx;
-    chart.data.datasets.forEach(function(ds, i) {
-      var meta = chart.getDatasetMeta(i);
+    var isDark = document.body.getAttribute('data-theme') === 'dark';
+    chart.data.datasets.forEach(function(ds, dsIdx) {
+      var meta = chart.getDatasetMeta(dsIdx);
       if (meta.hidden) return;
-      meta.data.forEach(function(el) {
+      meta.data.forEach(function(el, elIdx) {
+        var r = el.options && el.options.radius ? el.options.radius : 8;
+        if (r < 7) return;  // skip tiny bubbles
         var label = ds.label || '';
         if (!label || label === 'LOVEVOOK entry') return;
-        // Truncate long labels
-        var displayLabel = label.length > 12 ? label.substring(0, 11) + '.' : label;
+        // Strip prefix like [BAGSMART] or [LOVEVOOK] from ASIN labels
+        var display = label.replace(/^\[.*?\]\s*/, '');
+        display = display.length > 10 ? display.substring(0, 9) + '.' : display;
         ctx.save();
-        ctx.font = '10px Inter, system-ui, sans-serif';
-        ctx.fillStyle = document.body.getAttribute('data-theme') === 'dark' ? '#F9FAFB' : '#111827';
+        ctx.font = '10px Inter,system-ui,sans-serif';
+        ctx.fillStyle = isDark ? '#CBD5E1' : '#374151';
         ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        // Position label above bubble
-        var r = el.options && el.options.radius ? el.options.radius : 8;
-        ctx.fillText(displayLabel, el.x, el.y - r - 5);
+        // Alternate label position above/below to reduce overlap
+        var above = (dsIdx + elIdx) % 2 === 0;
+        ctx.textBaseline = above ? 'bottom' : 'top';
+        ctx.fillText(display, el.x, el.y + (above ? -(r + 3) : (r + 3)));
         ctx.restore();
       });
     });
@@ -354,6 +358,17 @@ function renderTierBubbleChart(key, d, tier) {
   var hi = tier==='budget'?budHi:tier==='mid'?midHi:999999;
 
   var tierBrands = d.brands.filter(function(b){return b.asp>=lo && b.asp<=hi;});
+  if(!tierBrands.length){
+    var canvas2=document.getElementById('tier-chart-'+key);
+    if(canvas2){var ec2=Chart.getChart(canvas2);if(ec2)ec2.destroy();
+      var ctx2=canvas2.getContext('2d');ctx2.clearRect(0,0,canvas2.width,canvas2.height);
+      ctx2.font='13px Inter,sans-serif';ctx2.fillStyle=tickCol();ctx2.textAlign='center';
+      ctx2.fillText('No brands from the top 20 price at this level in this category.',canvas2.width/2,canvas2.height/2);
+    }
+    var bt2=document.getElementById('tier-table-'+key);
+    if(bt2)bt2.innerHTML='<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:16px;font-style:italic">None of the top 20 brands compete at this price tier.</td></tr>';
+    return;
+  }
   var mx = Math.max.apply(null, tierBrands.map(function(b){return b.s;})) || 1;
 
   var datasets = tierBrands.map(function(b){
@@ -1260,7 +1275,10 @@ function renderNewCatTable(i,c,tier){
 
   if(view==='brand'){
     var tierBrands=c.brands.filter(function(b){return b.asp>=lo&&b.asp<=hi;});
-    if(!tierBrands.length)tierBrands=c.brands.slice(0,5);
+    if(!tierBrands.length){
+    el.innerHTML='<p style="color:var(--muted);padding:16px;font-style:italic;font-size:13px">No brands from the top tier compete at this price point in '+c.name+'.</p>';
+    return;
+  }
     var rows=tierBrands.map(function(b){
       var ckey=b.n.toLowerCase();
       var cd=competitorData[ckey]||{};
@@ -1415,11 +1433,11 @@ function buildOppShelfChart(i,c,datasets){
     data:{datasets:datasets},
     options:{responsive:true,maintainAspectRatio:false,
       plugins:{legend:{display:false},tooltip:{callbacks:{label:function(ctx){
-        if(ctx.datasetIndex===c.asins.length)return ['LOVEVOOK entry point','Likely ASP: $'+c.brandAsp];
+        if(ctx.datasetIndex===c.asins.length)return ['LOVEVOOK entry point','Likely ASP: ~$'+c.entryAsp];
         var a=c.asins[ctx.datasetIndex];return [a.n,'ASP: $'+a.p,'YoY: '+(a.yoy>=0?'+':'')+a.yoy+'%'];
       }}} },
       scales:{
-        x:{grid:{color:gridCol()},ticks:{color:tickCol(),font:{size:11}},title:{display:true,text:'ASP ($) &middot; LOVEVOOK entry ~$'+c.brandAsp+' &middot; Shelf: $'+Math.round(c.brandAsp*0.7)+'-$'+Math.round(c.brandAsp*1.3),color:tickCol(),font:{size:11}}},
+        x:{grid:{color:gridCol()},ticks:{color:tickCol(),font:{size:11}},title:{display:true,text:'ASP ($) &middot; LOVEVOOK entry ~$'+c.entryAsp+' &middot; Shelf: $'+Math.round(c.entryAsp*0.7)+'-$'+Math.round(c.entryAsp*1.3),color:tickCol(),font:{size:11}}},
         y:{grid:{color:gridCol()},ticks:{color:tickCol(),font:{size:11},callback:function(v){return (v>=0?'+':'')+v+'%';}},title:{display:true,text:'YoY Growth (%)',color:tickCol(),font:{size:11}}}
       }
     }
