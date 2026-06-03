@@ -1060,6 +1060,8 @@ function buildOppTab(){
         '<h4>'+c.name+'</h4>'+
         '<div class="om">$'+c.size+'M &middot; '+(c.yoy>=0?'+':'')+c.yoy+'% YoY</div>'+
         '<div class="om">Entry est. ~$'+c.entryAsp+'</div>'+
+        '<div style="font-size:11px;color:var(--muted);margin-top:5px;line-height:1.4">'+
+          (c.rationale?c.rationale.substring(0,120)+'..':'')+'</div>'+
         (c.isTopPick?'<div style="margin-top:6px;font-size:10px;font-weight:700;color:#2563EB;text-transform:uppercase">Recommended</div>':'')+
         '</div>';
     }).join('');
@@ -1306,10 +1308,9 @@ function showOpp(i,card){
   else {var el=document.querySelectorAll('.ocard')[i];if(el)el.classList.add('on');}
   var c=newCats[i];
 
-  var allAsps=c.brands.map(function(b){return b.asp;});
-  var minA=Math.min.apply(null,allAsps),maxA=Math.max.apply(null,allAsps);
-  var budHi=Math.round(minA+(maxA-minA)*0.33),midHi=Math.round(minA+(maxA-minA)*0.66);
-  var lvAsp=c.brandAsp;
+  var catAspSO=c.catAsp||c.asp||20;
+  var budHi=catAspSO,midHi=Math.round(catAspSO*2);
+  var lvAsp=c.entryAsp||c.asp||20;
   var entryTier=lvAsp<=budHi?'Budget':lvAsp<=midHi?'Mid':'Premium';
 
   var brandRows=c.brands.map(function(b){
