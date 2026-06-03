@@ -1000,7 +1000,9 @@ function buildShelfChart(key,d,datasets){
   var canvas=document.getElementById('sc-'+key);if(!canvas)return;
   var ec=Chart.getChart(canvas);if(ec)ec.destroy();
   new Chart(canvas,{
-    type:'bubble',data:{datasets:datasets},
+    type:'bubble',
+    plugins:[bubbleLabelPlugin],
+    data:{datasets:datasets},
     options:{responsive:true,maintainAspectRatio:false,
       plugins:{legend:{display:false},tooltip:{callbacks:{label:function(ctx){var b=d.brands[ctx.datasetIndex];return [b.n,'ASP: $'+b.asp,'Rev. Share: '+b.s.toFixed(1)+'%'];}}} },
       scales:{
@@ -1098,6 +1100,7 @@ function buildOppOverviewChart(){
   var tc3=isDark?'#9CA3AF':'#6B7280';
   new Chart(canvas,{
     type:'bubble',
+    plugins:[bubbleLabelPlugin],
     data:{datasets:allDs},
     options:{
       responsive:true,maintainAspectRatio:false,
@@ -1444,7 +1447,9 @@ function showSTab(tab,btn,containerId){
 function buildOppShelfChart(i,c,datasets){
   var canvas=document.getElementById('shelfChart-'+i);if(!canvas)return;
   new Chart(canvas,{
-    type:'bubble',data:{datasets:datasets},
+    type:'bubble',
+    plugins:[bubbleLabelPlugin],
+    data:{datasets:datasets},
     options:{responsive:true,maintainAspectRatio:false,
       plugins:{legend:{display:false},tooltip:{callbacks:{label:function(ctx){
         if(ctx.datasetIndex===c.asins.length)return ['LOVEVOOK entry point','Likely ASP: $'+c.brandAsp];
