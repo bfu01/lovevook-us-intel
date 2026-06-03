@@ -1050,74 +1050,72 @@ function tAcc(hdr){hdr.classList.toggle('open');hdr.nextElementSibling.classList
 
 // ── New Category Opportunity ───────────────────────────────────────────────────
 
+function buildOppTab(){
+  // Build category cards
+  var ocards=document.getElementById('ocards');
+  if(ocards){
+    ocards.innerHTML=newCats.map(function(c,i){
+      return '<div class="ocard tier-'+c.tier+(i===0?' on':'')+'" onclick="showOpp('+i+',this)">'+
+        '<div><span class="otier '+c.tier+'">'+c.tier.charAt(0).toUpperCase()+c.tier.slice(1)+'</span></div>'+
+        '<h4>'+c.name+'</h4>'+
+        '<div class="om">$'+c.size+'M &middot; '+(c.yoy>=0?'+':'')+c.yoy+'% YoY</div>'+
+        '<div class="om">Entry est. ~$'+c.entryAsp+'</div>'+
+        (c.isTopPick?'<div style="margin-top:6px;font-size:10px;font-weight:700;color:#2563EB;text-transform:uppercase">Recommended</div>':'')+
+        '</div>';
+    }).join('');
+  }
+  // Build legend
+  var lgdEl=document.getElementById('opp-legend');
+  if(lgdEl){
+    lgdEl.innerHTML='<div style="display:flex;gap:14px;font-size:11px;color:var(--muted);margin-bottom:10px">'+
+      '<span style="display:flex;align-items:center;gap:4px"><span style="width:9px;height:9px;background:#16A34A;border-radius:50%;display:inline-block"></span>Top opportunity</span>'+
+      '<span style="display:flex;align-items:center;gap:4px"><span style="width:9px;height:9px;background:#D97706;border-radius:50%;display:inline-block"></span>Medium</span>'+
+      '<span style="display:flex;align-items:center;gap:4px"><span style="width:9px;height:9px;background:#9CA3AF;border-radius:50%;display:inline-block"></span>Lower priority</span>'+
+    '</div>';
+  }
+  // Render overview chart
+  setTimeout(buildOppOverviewChart,150);
+}
+
+
 function buildOppOverviewChart(){
   var canvas=document.getElementById('oppOverviewChart');
-  if(!canvas){console.warn('oppOverviewChart canvas not found');return;}
+  if(!canvas){return;}
   var ec=Chart.getChart(canvas);
   if(ec)ec.destroy();
   var tierCols={top:'rgba(22,163,74,.8)',medium:'rgba(217,119,6,.8)',lower:'rgba(156,163,175,.7)'};
   var maxSize=Math.max.apply(null,newCats.map(function(c){return c.size;}));
-  var datasets=newCats.map(function(c,i){
+  var allDs=[];
+  newCats.forEach(function(c,i){
     var col=c.yoy<0?'rgba(220,38,38,.8)':(tierCols[c.tier]||'rgba(37,99,235,.7)');
-    return {
-      label:c.name,
-      data:[{x:c.size,y:c.yoy,r:Math.max(10,Math.min(40,10+30*Math.sqrt(c.size/maxSize)))}],
-      backgroundColor:col,
-      borderColor:'transparent',
-      borderWidth:0
-    };
+    allDs.push({label:c.name,data:[{x:c.size,y:c.yoy,r:Math.max(10,Math.min(38,10+28*Math.sqrt(c.size/maxSize)))}],
+      backgroundColor:col,borderColor:'transparent'});
   });
-  var gc2=gc(),gColor=gc2?'rgba(255,255,255,.07)':'rgba(0,0,0,.05)',tColor=gc2?'#9CA3AF':'#6B7280';
+  var isDark=gc();
+  var gc3=isDark?'rgba(255,255,255,.07)':'rgba(0,0,0,.05)';
+  var tc3=isDark?'#9CA3AF':'#6B7280';
   new Chart(canvas,{
     type:'bubble',
-    data:{datasets:datasets},
+    data:{datasets:allDs},
     options:{
-      responsive:true,
-      maintainAspectRatio:false,
-      layout:{padding:{top:30,bottom:10}},
-      animation:{onComplete:function(ctx){
-        // Draw labels after chart renders
-        var chart=ctx.chart;
-        var cx=chart.ctx;
-        cx.save();
-        cx.font='bold 11px Inter,system-ui,sans-serif';
-        cx.textAlign='center';
-        cx.textBaseline='bottom';
-        cx.fillStyle=gc2?'#F9FAFB':'#111827';
-        chart.data.datasets.forEach(function(ds,i){
-          var meta=chart.getDatasetMeta(i);
-          meta.data.forEach(function(el){
-            var lbl=ds.label.length>16?ds.label.substring(0,15)+'..':ds.label;
-            cx.fillText(lbl,el.x,el.y-el.options.radius-3);
-          });
-        });
-        cx.restore();
-      }},
+      responsive:true,maintainAspectRatio:false,
+      layout:{padding:{top:35}},
       plugins:{
         legend:{display:false},
         tooltip:{callbacks:{label:function(ctx){
           var c=newCats[ctx.datasetIndex];
-          return [c.name,'$'+c.size+'M',(c.yoy>=0?'+':'')+c.yoy+'% YoY','Entry ~$'+c.entryAsp];
+          return [c.name,'Size: $'+c.size+'M','Growth: '+(c.yoy>=0?'+':'')+c.yoy+'% YoY','Entry est. ~$'+c.entryAsp];
         }}}
       },
-      onClick:function(e,els){if(els&&els.length){showOpp(els[0].datasetIndex);}},
+      onClick:function(e,els){if(els&&els.length)showOpp(els[0].datasetIndex);},
       scales:{
-        x:{
-          grid:{color:gColor},
-          ticks:{color:tColor,font:{size:11}},
-          title:{display:true,text:'Category Size ($M LTM)',color:tColor,font:{size:11}}
-        },
-        y:{
-          grid:{color:gColor},
-          ticks:{color:tColor,font:{size:11},callback:function(v){return (v>=0?'+':'')+v+'%';}},
-          title:{display:true,text:'YoY Growth',color:tColor,font:{size:11}}
-        }
+        x:{grid:{color:gc3},ticks:{color:tc3,font:{size:11}},title:{display:true,text:'Category Size ($M)',color:tc3,font:{size:11}}},
+        y:{grid:{color:gc3},ticks:{color:tc3,font:{size:11},callback:function(v){return (v>=0?'+':'')+v+'%';}},title:{display:true,text:'YoY Growth (%)',color:tc3,font:{size:11}}}
       }
     }
   });
 }
 
-// ── Full category analysis for new category opportunity ───────────────────────
 var _newCatView = {};   // 'brand' or 'asin' per category index
 var _newCatTier = {};   // active tier per category index
 
