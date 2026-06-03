@@ -613,7 +613,7 @@ function renderCat(key){
   ];
   var maxClicks=Math.max.apply(null,wbuckets.map(function(b){return b.cur+b.pot;}));
 
-  var wLeftHtml=wbuckets.map(function(b,i){
+  function wLeftHtml(b,i){
     var total=b.cur+b.pot;
     var curPct=total>0?Math.round((b.cur/total)*100):0;
     var advPct=Math.round(b.adv_pct||0);
@@ -647,7 +647,7 @@ function renderCat(key){
         '</div>'+
       '</div>'+
       '</div>';
-  }).join('');
+  }
 
   document.getElementById('cpanels').innerHTML=
     '<div class="cards">'+cards+'</div>'+
@@ -708,8 +708,8 @@ function renderCat(key){
       '<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);padding-bottom:6px;border-bottom:2px solid var(--border)">Monitor & Develop</div>'+
     '</div>'+
     '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">'+
-      '<div id="wleft-win-'+key+'"></div>'+
-      '<div id="wleft-opp-'+key+'"></div>'+
+      '<div id="wleft-win-'+key+'">'+wbuckets.slice(0,2).map(wLeftHtml).join('')+'</div>'+
+      '<div id="wleft-opp-'+key+'">'+wbuckets.slice(2).map(wLeftHtml).join('')+'</div>'+
     '</div>'+
     '<p class="dn" style="margin-top:12px">Keyword winnability data covers LOVEVOOK&#8217;s full US search footprint. Individual term estimates are directional. Source: Pattern Intelligence via softy_brand_winnability_summary (winnability_adj thresholds: 11=Winning, 9-11=High, 6-9=Medium, 3-6=Low, 0-3=Very Low).</p>'+
     '</div></div>';
@@ -1286,10 +1286,8 @@ function renderNewCatTable(i,c,tier){
 
   if(view==='brand'){
     var tierBrands=c.brands.filter(function(b){return b.asp>=lo&&b.asp<=hi;});
-    if(!tierBrands.length){
-    el.innerHTML='<p style="color:var(--muted);padding:16px;font-style:italic;font-size:13px">No brands from the top tier compete at this price point in '+c.name+'.</p>';
-    return;
-  }
+    // Fall back to all brands if none in the selected tier
+    if(!tierBrands.length) tierBrands=c.brands.slice();
     var rows=tierBrands.map(function(b){
       var ckey=b.n.toLowerCase();
       var cd=competitorData[ckey]||{};
@@ -1380,10 +1378,7 @@ function showOpp(i,card){window._lastOppIdx=i;
   document.getElementById('odet').innerHTML=
     '<div style="background:var(--ctx);border-left:4px solid '+(c.tier==='top'?'#16A34A':c.tier==='medium'?'#D97706':'var(--muted)')+';border-radius:0 9px 9px 0;padding:14px 18px;font-size:13px;line-height:1.6;margin-bottom:18px">'+c.rationale+'</div>'+
     renderNewCatAnalysis(i,c)+
-    +
-    (c.patternRole||'')+'</div>'+
-    '</div>'+
-    '</div>';
+    (c.patternRole?'<div class="prole">'+c.patternRole+'</div>':'');
 
   // Apply current language to newly rendered content
   if(_lang==='zh'){setTimeout(function(){applyI18n(document.getElementById('odet'));},200);}
