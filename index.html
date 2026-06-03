@@ -269,6 +269,9 @@ function toggleTheme(){
   ['ld','fld'].forEach(function(id){document.getElementById(id).style.display=dk?'none':'block';});
 }
 
+// ── Translation helper ───────────────────────────────────────────────────────
+function t(key,fallback){return (_lang==='zh'&&zh[key])?zh[key]:fallback;}
+
 // ── Language ─────────────────────────────────────────────────────────────────
 var _lang='en', _origText={};
 function toggleLang(){
