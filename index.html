@@ -1311,6 +1311,7 @@ function showOpp(i,card){
   var catAspSO=c.catAsp||c.asp||20;
   var budHi=catAspSO,midHi=Math.round(catAspSO*2);
   var lvAsp=c.entryAsp||c.asp||20;
+  var shelfPct=c.shelfRange||20;
   var entryTier=lvAsp<=budHi?'Budget':lvAsp<=midHi?'Mid':'Premium';
 
   var brandRows=c.brands.map(function(b){
@@ -1392,7 +1393,7 @@ function showOpp(i,card){
     (lvAsp>c.asp?'This positions LOVEVOOK above the category average ($'+c.asp+'), in the premium segment where content quality and brand recognition drive conversion.':'This positions LOVEVOOK near the category average ($'+c.asp+'), where Pattern would differentiate through superior listing content and targeted keyword capture.')+
     ' Pattern would anchor initial ad spend on search terms where LOVEVOOK already has organic momentum across its bag categories.'+
     '</div>'+
-    c.patternRole+'</div>'+
+    (c.patternRole||'')+'</div>'+
     '</div>'+
     '</div>';
 
