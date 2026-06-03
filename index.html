@@ -782,13 +782,25 @@ function buildCombinedAsinChart(key,d){
           (a.yoy!=null?(a.yoy>=0?'+':'')+a.yoy.toFixed(1)+'%':'new'),
           'Reviews: '+((a.reviews||a.current_review_count||0)).toLocaleString()];
       }}}},
-      scales:{
-        x:{grid:{color:gridCol()},ticks:{color:tickCol(),font:{size:11}},
-          suggestedMin:Math.max(0,lo-10),suggestedMax:hi<9999?hi+15:(tierA.length?Math.max.apply(null,tierA.map(function(a){return a.p;}))+30:200),
-          title:{display:true,text:'ASP ($)',color:tickCol(),font:{size:11}}},
-        y:{grid:{color:gridCol()},ticks:{color:tickCol(),font:{size:11},callback:function(v){return (v>=0?'+':'')+v+'%';}},
-          suggestedMin:-40,suggestedMax:40,
-          title:{display:true,text:'YoY Growth',color:tickCol(),font:{size:11}}}}
+      scales:(function(){
+        var aps=tierA.map(function(a){return a.p;});
+        var dMin=aps.length?Math.min.apply(null,aps):lo;
+        var dMax=aps.length?Math.max.apply(null,aps):hi;
+        var pad=Math.max((dMax-dMin)*0.4,8);
+        var xMin=Math.max(0,Math.min(lo-5,dMin-pad));
+        var xMax=hi<9999?Math.max(hi+5,dMax+pad):dMax+pad+20;
+        var yoys=tierA.map(function(a){return a.yoy||0;}).filter(function(v){return v!==null;});
+        var yMin=yoys.length?Math.min.apply(null,yoys)-15:-30;
+        var yMax=yoys.length?Math.max.apply(null,yoys)+15:30;
+        return {
+          x:{grid:{color:gridCol()},ticks:{color:tickCol(),font:{size:11}},
+            min:xMin,max:xMax,
+            title:{display:true,text:'ASP ($)',color:tickCol(),font:{size:11}}},
+          y:{grid:{color:gridCol()},ticks:{color:tickCol(),font:{size:11},callback:function(v){return (v>=0?'+':'')+v+'%';}},
+            suggestedMin:yMin,suggestedMax:yMax,
+            title:{display:true,text:'YoY Growth',color:tickCol(),font:{size:11}}}
+        };
+      })()
     }});
 }
 
@@ -823,15 +835,15 @@ function buildFilteredAsinChart(key,d,allA,lo,hi){
     var yoy=a.yoy!=null?a.yoy:0;
     var bg,bc,bw;
     if(a.isN){
-      // LOVEVOOK: always full blue regardless of tier
-      bg='rgba(37,99,235,.9)'; bc='#2563EB'; bw=2;
+      // LOVEVOOK: always solid blue - always visible
+      bg='rgba(37,99,235,.9)'; bc='#2563EB'; bw=2.5;
     } else if(inTier){
-      // In-tier competitors: color by YoY direction
-      bg=yoy>0?'rgba(22,163,74,.72)':'rgba(220,38,38,.65)';
-      bc=yoy>0?'#16A34A':'#DC2626'; bw=1.5;
+      // In-tier competitors: strongly visible, colored by growth direction
+      bg=yoy>0?'rgba(22,163,74,.85)':'rgba(220,38,38,.8)';
+      bc=yoy>0?'#16A34A':'#DC2626'; bw=2;
     } else {
-      // Out-of-tier: very faint
-      bg='rgba(156,163,175,.12)'; bc='rgba(0,0,0,.04)'; bw=1;
+      // Out-of-tier: very faint but still shows full picture
+      bg='rgba(156,163,175,.08)'; bc='rgba(0,0,0,.03)'; bw=0.5;
     }
     return {label:(a.isN?'[LOVEVOOK] ':'['+a.brand+'] ')+a.n,
       data:[{x:a.p,y:yoy,r:r}],
@@ -840,13 +852,21 @@ function buildFilteredAsinChart(key,d,allA,lo,hi){
   new Chart(canvas,{type:'bubble',plugins:[bubbleLabelPlugin],data:{datasets:datasets},
     options:{responsive:true,maintainAspectRatio:false,layout:{padding:{top:20}},
       plugins:{legend:{display:false},tooltip:{callbacks:{label:function(ctx){var a=allA[ctx.datasetIndex];return ['['+a.brand+'] '+a.n,'$'+a.p,(a.yoy!=null?(a.yoy>=0?'+':'')+a.yoy.toFixed(1)+'%':'new')];}}}},
-      scales:{
-        x:{grid:{color:gridCol()},ticks:{color:tickCol(),font:{size:11}},
-          suggestedMin:Math.max(0,lo-10),suggestedMax:hi<9999?hi+15:Math.max.apply(null,allA.map(function(a){return a.p;}).concat([120]))+20,
-          title:{display:true,text:'ASP ($)',color:tickCol(),font:{size:11}}},
-        y:{grid:{color:gridCol()},ticks:{color:tickCol(),font:{size:11},callback:function(v){return (v>=0?'+':'')+v+'%';}},
-          suggestedMin:-50,suggestedMax:160,
-          title:{display:true,text:'YoY Growth',color:tickCol(),font:{size:11}}}}
+      scales:(function(){
+        var inTierAs=allA.filter(function(a){return a.p>=lo&&a.p<=hi;});
+        var allPs=allA.map(function(a){return a.p;});
+        // x: show full range with tier bounds + data range
+        var xMin=Math.max(0,Math.min(lo-10,Math.min.apply(null,allPs)-5));
+        var xMax=hi<9999?Math.max(hi+10,Math.max.apply(null,allPs)+10):Math.max.apply(null,allPs)+20;
+        return {
+          x:{grid:{color:gridCol()},ticks:{color:tickCol(),font:{size:11}},
+            min:xMin,max:xMax,
+            title:{display:true,text:'ASP ($)',color:tickCol(),font:{size:11}}},
+          y:{grid:{color:gridCol()},ticks:{color:tickCol(),font:{size:11},callback:function(v){return (v>=0?'+':'')+v+'%';}},
+            suggestedMin:-50,suggestedMax:160,
+            title:{display:true,text:'YoY Growth',color:tickCol(),font:{size:11}}}
+        };
+      })()
     }});
 }
 
