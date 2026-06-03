@@ -196,7 +196,7 @@ tr.brow:hover td{background:rgba(37,99,235,.12)!important}
 </div>
 <div class="rowhd"><h3 data-i18n="portfolioTableTitle">Portfolio Summary</h3><span>T12M &middot; Amazon US</span></div>
 <div class="twrap"><table>
-  <thead><tr><th style="text-align:left">Category</th><th>Cat. YoY</th><th>Brand YoY</th><th>Brand Rank</th><th>Brand Share</th><th>Share YoY</th><th>Brand ASP</th><th>Cat. ASP</th><th>POT Rev %</th></tr></thead>
+  <thead><tr><th style="text-align:left">Category</th><th>Cat. YoY</th><th>Brand Rank</th><th>Brand Share</th><th>Share YoY</th><th>Brand ASP</th><th>Cat. ASP</th><th>POT Rev %</th></tr></thead>
   <tbody id="ptb"></tbody>
 </table></div>
 <p class="note">Revenue figures are estimates based on Pattern Intelligence data. POT Rev % represents each category's estimated share of LOVEVOOK&#8217;s total Amazon US revenue.</p>
@@ -449,7 +449,7 @@ function buildPortTable(){
   document.getElementById('ptb').innerHTML=portData.map(function(d){
     return '<tr><td style="font-weight:600">'+d.cat+'</td>'+
       '<td class="'+(d.y!=null&&d.y>0?'pos-v':d.y!=null&&d.y<0?'neg-v':'')+'">'+(d.y!=null?(d.y>=0?'+':'')+d.y+'%':'-')+'</td>'+
-      '<td class="'+(d.brandY!=null&&d.brandY>0?'pos-v':d.brandY!=null&&d.brandY<0?'neg-v':'')+'">'+(d.brandY!=null?(d.brandY>=0?'+':'')+d.brandY+'%':'new')+'</td>'+
+      
       '<td>'+(d.rank?'#'+d.rank:'-')+'</td>'+
       '<td>'+d.share+'</td>'+
       '<td class="'+(d.shareYoy!=null&&d.shareYoy>0?'pos-v':d.shareYoy!=null&&d.shareYoy<0?'neg-v':'')+'">'+
