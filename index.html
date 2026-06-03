@@ -675,6 +675,7 @@ function renderCat(key){
     '</div></div>'+
     '<div class="csub" id="shelf-sub-'+key+'">ASP vs revenue share &middot; blue = LOVEVOOK &middot; grey = competitors &middot; click a tier to highlight</div>'+
     '<div style="position:relative;height:260px"><canvas id="sc-'+key+'"></canvas></div>'+
+    '<div id="asin-comp-note-'+key+'" class="dn" style="display:none;margin-top:8px"></div>'+
     '</div>'+
     '<div class="tbts" id="tbts-'+key+'" data-idx="'+key+'" style="margin-bottom:12px">'+
     '<button class="tbt '+(lvAsp<=budHi?'on':'')+'" onclick="setTierFromBtn(this)" data-tier="budget">Budget ($'+minA+'-$'+budHi+')'+(lvAsp<=budHi?' &middot; LOVEVOOK':'')+' </button>'+
@@ -817,7 +818,7 @@ function setShelfView(view,key){
   var sub=document.getElementById('shelf-sub-'+key);
   if(sub)sub.textContent=view==='brand'?
     'ASP vs revenue share · blue = LOVEVOOK · grey = competitors · click a tier to highlight':
-    'ASP vs YoY growth · bubble size = reviews · blue = LOVEVOOK ASINs · grey = competitors · click a tier to filter';
+    'ASP vs YoY growth · bubble size = reviews · blue = LOVEVOOK · green/red = in-tier competitors · click a tier to filter · competitor coverage varies by brand';
 
   var tierTableEl=document.getElementById('tier-table-'+key);
   var tierTableWrap=tierTableEl&&tierTableEl.closest('.twrap');
@@ -849,6 +850,16 @@ function buildCombinedAsinChart(key,d){
   // Show all ASINs (LOVEVOOK + competitors) without tier filtering
   var compAsins=compAsinMap[key]||[];
   var allA=d.asins.concat(compAsins);
+  // Show note if no competitor ASINs available
+  var noteEl=document.getElementById('asin-comp-note-'+key);
+  if(noteEl){
+    if(!compAsins.length){
+      noteEl.textContent='Competitor ASIN data not available for this category in the current dataset. Brand-level comparison available in Brand View.';
+      noteEl.style.display='block';
+    } else {
+      noteEl.style.display='none';
+    }
+  }
   var maxRev=Math.max.apply(null,allA.map(function(a){return a.rev||1;}));
   var canvas=document.getElementById('sc-'+key);if(!canvas)return;
   var ec=Chart.getChart(canvas);if(ec)ec.destroy();
