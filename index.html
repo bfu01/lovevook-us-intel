@@ -1061,7 +1061,7 @@ function buildOppTab(){
         '<div class="om">$'+c.size+'M &middot; '+(c.yoy>=0?'+':'')+c.yoy+'% YoY</div>'+
         '<div class="om">Entry est. ~$'+c.entryAsp+'</div>'+
         '<div style="font-size:11px;color:var(--muted);margin-top:5px;line-height:1.4">'+
-          (c.rationale?c.rationale.substring(0,120)+'..':'')+'</div>'+
+          (c.rationale||'')+'</div>'+
         (c.isTopPick?'<div style="margin-top:6px;font-size:10px;font-weight:700;color:#2563EB;text-transform:uppercase">Recommended</div>':'')+
         '</div>';
     }).join('');
@@ -1378,8 +1378,8 @@ function showOpp(i,card){
     '<div style="background:var(--ctx);border-left:3px solid var(--muted);border-radius:0 8px 8px 0;padding:10px 14px;font-size:11px;color:var(--muted);margin-bottom:12px">'+
     '<strong style="color:var(--muted)">Pricing methodology:</strong> '+
     (c.bridgeBrand?
-      'Entry price estimated by applying LOVEVOOK&#8217;s typical premium over '+c.bridgeBrand+' ('+Math.round((1.37-1)*100)+'% on average across current shared categories) to '+c.bridgeBrand+'&#8217;s $'+Math.round(c.asp*0.8)+'-'+c.asp+' ASP range in this category.':
-      'No bridge brand found in this category. Entry price based on category average ASP with a modest premium.')+
+      'Entry price estimated using LOVEVOOK&#8217;s typical premium over '+c.bridgeBrand+' across shared categories (avg +37%). '+c.bridgeBrand+' prices at $'+c.asp+' in this category.':
+      'No bridge brand overlap found. Entry price estimated from category average ASP.')+
     ' Shelf range of &#177;'+shelfPct+'% captures the middle 50% of competitor ASPs (interquartile range) in '+c.name+', capped between 15-30%.'+
     (c.shelfRangeNote?' '+c.shelfRangeNote:'')+
     '</div>'+
